@@ -4,18 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{CDC66901-C8BE-440E-8527-FA4F27FE87A5}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>_9_2</RootNamespace>
-    <AssemblyName>9_2</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <ProjectGuid>{0B1089BB-AB16-4646-BF44-16658B9668C9}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ClassLibraryUP8</RootNamespace>
+    <AssemblyName>ClassLibraryUP8</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -25,7 +23,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -44,12 +41,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Employe.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="Building.cs" />
+    <Compile Include="Castle.cs" />
+    <Compile Include="Employee.cs" />
+    <Compile Include="House.cs" />
+    <Compile Include="ICalsulation.cs" />
+    <Compile Include="ICreate.cs" />
+    <Compile Include="IPay.cs" />
+    <Compile Include="MomentOfTime.cs" />
+    <Compile Include="MultiBuilding.cs" />
+    <Compile Include="Numbers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

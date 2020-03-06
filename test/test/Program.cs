@@ -11,14 +11,10 @@ namespace ConsoleApplication1
 
         public static void Main()
         {
-            int x = 345;
-            int  sum = 0;
-               while(x > 0)
-            {
-                sum += x % 10;
-                x /= 10;
-            }
-            Console.WriteLine(sum) ;
+            string s1 = "cat";
+            string s2 = "cat";
+            s2 = "Dog";
+            Console.WriteLine(s1 + " " + s2);
         }
     }
 }

@@ -36,7 +36,8 @@ namespace _9_2
         }
         public void DisplayInfo()
         {
-            Console.WriteLine($"name={name} surname = {surname}  middleName = { middleName}  Post= {Post}  year={year}  salary={ salary} ");
+            Console.WriteLine($"name={name} surname = {surname}  middleName = { middleName} " +
+                $" Post= {Post}  year={year}  salary={ salary} ");
         }
     }
 }
