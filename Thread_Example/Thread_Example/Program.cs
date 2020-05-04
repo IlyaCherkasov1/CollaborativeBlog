@@ -4,29 +4,39 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace Thread_Example
 {
     class Program
     {
+
         static void Main(string[] args)
         {
-            using (var mutex = new Mutex(false, "RandomString"))
+            Parallel.Invoke(
+            () =>
             {
-                if (!mutex.WaitOne(TimeSpan.FromSeconds(3), false))
-                {
-                    Console.WriteLine("Another instance is running");
-                    return;
-                }
-                RunProgram();
-            }
-          
+                Console.WriteLine("сразу");
+            },
+
+            () =>
+            {
+                Console.WriteLine("все");
+
+            },
+
+            () =>
+            {
+                Console.WriteLine("задачи");
+
+            });
         }
 
-        private static void RunProgram()
+        static int i;
+
+         static void Asinc(int i)
         {
-            Console.WriteLine("Running");
-            Console.ReadKey();
+
         }
     }
 }

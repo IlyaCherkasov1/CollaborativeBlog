@@ -1,0 +1,12 @@
+﻿<h2>Все посты </h2>
+<h3>@Model.currCategory</h3>
+ @{
+  foreach (var post in Model.getAllPosts)
+   {
+          <div>
+              <h2>Name = @post.Name</h2>
+              <p>Short Description = @post.ShortDescription</p>
+          </div>
+        }  
+
+    }

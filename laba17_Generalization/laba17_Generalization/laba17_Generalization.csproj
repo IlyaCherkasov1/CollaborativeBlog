@@ -49,5 +49,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Laba17DLL\Laba17DLL.csproj">
+      <Project>{b704f754-cf60-4189-859e-f9b220d12fce}</Project>
+      <Name>Laba17DLL</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
