@@ -1,0 +1,94 @@
+﻿@model IEnumerable<Category>
+
+<script src="~/ckeditor/ckeditor.js"></script>
+<script src="~/js/tags/tags.js"> </script>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Добавление публикации</title>
+</head>
+<body>
+    <div>
+
+        <h3>Добавление публикации</h3>
+        <p>Для добавление публикации заполните следующие поля:</p>
+
+        <form asp-action="AddPost" asp-controller="Post" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="PostId" value="0" />
+
+            <div class="form-group col-md-15">
+                <input class="form-control" type="text" name="Title" placeholder="Заголовок" />
+            </div>
+
+            <div class="form-group  col-md-15">
+                <textarea class="form-control" rows="3" type="text" name="ShortDescription" placeholder="Короткое описание"></textarea>
+            </div>
+
+            <div class="form-group col-md-15">
+                <textarea name="Description" id="Description" rows="10" cols="80"></textarea>
+            </div>
+
+            <div class="form-group col-md-15">
+                <input class="form-control" type="datetime-local" name="PublicationDate" placeholder="Дата" />
+            </div>
+
+            <div class="form-group  col-md-15">
+                <input name="Image" type="file" class="form-control" />
+            </div>
+
+
+            <div class="form-group col-md-15">
+                <div>
+                    <select name="Category">
+                        <option>Выбирете категорию</option>
+                        @foreach (var category in Model)
+                        {
+                            <option value="@category.CategoryName">@category.CategoryName</option>
+                        }
+                    </select>
+                    <div class="select-arrow"></div>
+                </div>
+            </div>
+
+            <div class="form-group col-md-15">
+                <div>
+                    <select class="form-select" id="validationTags" multiple data-allow-new="false"
+                            data-show-all-suggestions="true">
+                        <option selected disabled hidden value="">Choose a tag...</option>
+                        <option value="1" selected="selected">JavaScript</option>
+                        <option value="2">HTML5</option>
+                        <option value="3">CSS3</option>
+                        <option value="4">jQuery</option>
+                        <option value="5">React</option>
+                        <option value="6">Angular</option>
+                        <option value="7">Vue</option>
+                        <option value="8">Python</option>
+                    </select>
+                    <div class="select-arrow"></div>
+
+                    @*<div class="invalid-feedback">Please select a valid tag.</div>*@
+                </div>
+
+            </div>
+
+
+            <div class="panel-body">
+                <button type="submit" id="submit" style="width:1600px;"
+                        class="btn btn-success"
+                        back>
+                    Отправить
+                </button>
+            </div>
+
+
+        </form>
+    </div>
+
+    <script>
+        CKEDITOR.replace('Description');
+    </script>
+    
+
+</body>
+</html>
