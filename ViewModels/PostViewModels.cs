@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CollaborativeBlog.Models;
+using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +15,9 @@ namespace CollaborativeBlog.ViewModels
         public string ShortDescription { get; set; }
         public string Description { get; set; }
         public DateTime PublicationDate { get; set; }
-        public byte[] Image { get; set; }
-    
+        public IEnumerable<IFormFile> Images { get; set; }
+        public int CategoryId { get; set; }
+        public List<int> TagsId { get; set; }
+
     }
 }

@@ -1,4 +1,6 @@
+using Azure.Storage.Blobs;
 using CollaborativeBlog.Models;
+using CollaborativeBlog.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -22,17 +24,21 @@ namespace CollaborativeBlog
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             string connection = Configuration.GetConnectionString("DefaultConnection");
 
             services.AddDbContext<ApplicationContext>(options =>
                 options.UseSqlServer(connection));
+
+            var blobConnection = Configuration.GetValue<string>("BlobConnection");
+            services.AddSingleton(x => new BlobServiceClient(blobConnection));
+            services.AddSingleton<IBlobService, BlobService>();
             services.AddControllersWithViews();
+
+            
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -42,7 +48,6 @@ namespace CollaborativeBlog
             else
             {
                 app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
