@@ -4,14 +4,16 @@ using CollaborativeBlog.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CollaborativeBlog.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20211114071518_addImageTable")]
+    partial class addImageTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -70,9 +72,6 @@ namespace CollaborativeBlog.Migrations
                     b.Property<DateTime>("PublicationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Rating")
-                        .HasColumnType("int");
-
                     b.Property<string>("ShortDescription")
                         .HasColumnType("nvarchar(max)");
 
@@ -119,7 +118,7 @@ namespace CollaborativeBlog.Migrations
             modelBuilder.Entity("CollaborativeBlog.Models.Image", b =>
                 {
                     b.HasOne("CollaborativeBlog.Models.Post", "Post")
-                        .WithMany("Images")
+                        .WithMany("Image")
                         .HasForeignKey("PostId");
 
                     b.Navigation("Post");
@@ -158,7 +157,7 @@ namespace CollaborativeBlog.Migrations
 
             modelBuilder.Entity("CollaborativeBlog.Models.Post", b =>
                 {
-                    b.Navigation("Images");
+                    b.Navigation("Image");
                 });
 #pragma warning restore 612, 618
         }

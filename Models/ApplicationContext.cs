@@ -16,5 +16,6 @@ namespace CollaborativeBlog.Models
         public DbSet<Post> Posts { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Tag> Tags { get; set; }
+        public DbSet<Image> Image { get; set; }
     }
 }

@@ -37,27 +37,39 @@ namespace CollaborativeBlog.Controllers
 
         [HttpPost]
         public async Task<IActionResult> AddPostAsync(PostViewModels postView)
-        {
-            // var fileName = Guid.NewGuid() + Path.GetExtension(postView.Image.FileName);
-            //   var res = await _blobService.UploadBlob(fileName, postView.Image, "images");
+        {       
+            Post post = new Post
+            {
+                Title = postView.Title,
+                ShortDescription = postView.ShortDescription,
+                Description = postView.Description,
+                PublicationDate = DateTime.Now,
+                Rating = postView.Rating,
+                CategoryId = postView.CategoryId,
+                Category = db.Categories.Where(x => x.CategoryId == postView.CategoryId).First(),
+                Tags = db.Tags.Where(x => !postView.TagsId.Any(y => y == x.TagId)).ToList()
+            };
 
-            var files = HttpContext.Request.Form.Files;
-            //Post post = new Post
-            //{
-            //    Title = postView.Title,
-            //    ShortDescription = postView.ShortDescription,
-            //    Description = postView.Description,
-            //    PublicationDate = postView.PublicationDate,
-            //    //     Image = await _blobService.GetBlob(fileName, "images"),
-            //    CategoryId = postView.CategoryId,
-            //    Category = db.Categories.Where(x => x.CategoryId == postView.CategoryId).First(),
-            //    Tags = db.Tags.Where(x => !postView.TagsId.Any(y => y == x.TagId)).ToList()
-            //};
+            List<Image> images = new List<Image>();                   
+            List<string> fileNames = new List<string>();
+            List<string> imageBlobs = new List<string>();
 
-            //db.Posts.Add(post);
-            //await db.SaveChangesAsync();
+            foreach (var image in postView.Images)
+            {
+                string fileName = Guid.NewGuid() + Path.GetExtension(image.FileName);
+                images.Add(new Image { ImageName = fileName, Post = post });
+                fileNames.Add(fileName);
+                var res = await _blobService.UploadBlob(fileName, image, "images");
+                imageBlobs.Add(await _blobService.GetBlob(fileName, "images"));
+            }
+           
 
-            return Redirect("~/Home/Index" );
+            post.Images = images;
+            db.Posts.Add(post);
+          
+            await db.SaveChangesAsync();
+
+            return Redirect("/Home/Index");
         }
 
     

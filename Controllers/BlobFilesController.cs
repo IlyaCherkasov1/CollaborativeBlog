@@ -51,6 +51,7 @@ namespace CollaborativeBlog.Controllers
         public async Task<IActionResult> ViewFile(string name)
         {
             var res = await _blobService.GetBlob(name, "images");
+         
             return Redirect(res);   
         }
 

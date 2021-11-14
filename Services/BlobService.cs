@@ -53,13 +53,13 @@ namespace CollaborativeBlog.Services
             return  blobClient.Uri.AbsoluteUri;
         }
 
+   
+
         public async Task<bool> UploadBlob(string name, IFormFile file, string containerName)
         {
             var containerClient = _blobClient.GetBlobContainerClient(containerName);
 
-            // checking if the file exist 
-            // if the file exist it will be replaced
-            // if it doesn't exist it will create a temp space until its uploaded
+            
             var blobClient = containerClient.GetBlobClient(name);
 
             var httpHeaders = new BlobHttpHeaders()
@@ -74,5 +74,7 @@ namespace CollaborativeBlog.Services
 
             return false;
         }
+
+      
     }
 }
