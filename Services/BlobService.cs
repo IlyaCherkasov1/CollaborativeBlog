@@ -24,6 +24,7 @@ namespace CollaborativeBlog.Services
             var containerClient = _blobClient.GetBlobContainerClient(containerName);
 
             var files = new List<string>();
+       
 
             var blobs = containerClient.GetBlobsAsync();
 

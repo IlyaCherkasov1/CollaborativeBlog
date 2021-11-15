@@ -1,101 +1,92 @@
-﻿<a asp-controller="Post" asp-action="AddPost"> Add Post </a>
+﻿
 
 <link rel="stylesheet" href="~/lib/bootstrap/dist/css/owl.carousel.min.css" />
 <link rel="stylesheet" href="~/lib/bootstrap/dist/css/owl.theme.default.min.css" />
+
+<h1>Публикации по тэгам:</h1>
+<p>Обновляется после каждой добавленной записи</p>
+
+<div class="container">
+    <div class="owl-one owl-carousel owl-theme">
+        @foreach (var tag in Model.AllTags)
+        {
+            <div class="ms-2 me-2">
+                <div class="card">
+                    <div  class="card-body">
+                        <a  class="card-title" asp-controller="Home" asp-action="Index" asp-route-tag="@tag">#@tag </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="container">
+    <div class="owl-two owl-carousel owl-theme">
+
+        @foreach (var post in Model.PostsWithTags)
+        {
+            <div class="ms-2 me-2">
+                <div class="card">
+                    <img src="@post.Images[0].ImageUri" class="card-img-top " />
+                    <div class="card-body">
+                        <h5 class="card-title text-truncate">
+                            <a asp-controller="Post" asp-action="PostDetails" asp-route-postId="@post.PostId">
+                            @post.Title</a>
+                        </h5>
+                        @post.Category.CategoryName
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
 
 <h1>Недавно опубликованные:</h1>
 <p>Обновляется после каждой добавленной записи</p>
 
 <div class="container">
-    <div class="owl-carousel owl-theme">
-        <div class="ms-2 me-2">
-            <div class="card">
-                <img src="~/testImg/10d7ae41d519bc848315b07e626066e8.jpg" class="card-img-top" />
-                <div class="card-body">
-                    <h5 class="card-title">Image Title</h5>
-                    Your Description
-                </div>
-            </div>
-        </div>
-        <div class="ms-2 me-2">
-            <div class="card">
-                <img src="~/testImg/40e323b807cf340e33892efa9f482928.jpg" class="card-img-top" />
-                <div class="card-body">
-                    <h5 class="card-title">Image Title</h5>
-                    Your Description
-                </div>
-            </div>
-        </div>
+    <div class="owl-two owl-carousel owl-theme">
 
-        <div class="ms-2 me-2">
-            <div class="card">
-                <img src="~/testImg/6408c618c3a8ec557c0a7a57694cad30.jpg" class="card-img-top" />
-                <div class="card-body">
-                    <h5 class="card-title">Image Title</h5>
-                    Your Description
+        @foreach (var post in Model.AllPosts)
+        {
+            <div class="ms-2 me-2">
+                <div class="card">
+                    <img src="@post.Images[0].ImageUri" class="card-img-top " />
+                    <div class="card-body">
+                        <h5 class="card-title text-truncate">@post.Title</h5>
+                        @post.Category.CategoryName
+                    </div>
                 </div>
             </div>
-        </div>
-
-        <div class="ms-2 me-2">
-            <div class="card">
-                <img src="~/testImg/aa06cea4c6619df33d4f65fabe6dbb21.jpg" class="card-img-top " />
-                <div class="card-body">
-                    <h5 class="card-title">Image Title</h5>
-                    Your Description
-                </div>
-            </div>
-        </div>
-
-        <div class="ms-2 me-2">
-            <div class="card">
-                <img src="~/testImg/d0d45188f0fdfddeff1c27cccf38f8c4.jpg" class="card-img-top" />
-                <div class="card-body">
-                    <h5 class="card-title">Image Title</h5>
-                    Your Description
-                </div>
-            </div>
-        </div>
-
+        }
     </div>
 </div>
 
-<script>
-    $(document).ready(function () {
-        $(".owl-carousel").owlCarousel({
-            autoplay: true,
-            autoplayhoverpause: true,
-            autoplaytimeout: 100,
-            items: 4,
-            nav: true,
-            loop: true,
-            margin: 5,
-            padding: 5,
-            stagePadding: 5,
-            responsive: {
-                0: {
-                    items: 1,
-                    dots:false
-                },
-                485: {
-                    items: 2,
-                    dots: false
-                },
-                728: {
-                    items: 3,
-                    dots: false
-                },
-                960: {
-                    items: 4,
-                    dots: false
-                },
-                1200: {
-                    items: 4,
-                    dots: false
-                },
-            }
-        });
-    })
-</script>
+
+<h1>Публикации с самым высоким рэйтингом:</h1>
+<p>Обновляется после каждой добавленной записи</p>
+
+<div class="container">
+    <div class="owl-three owl-carousel owl-theme">
+
+        @foreach (var post in Model.HighlyRatedPublications)
+        {
+            <div class="ms-2 me-2">
+                <div class="card">
+                    <img src="@post.Images[0].ImageUri" class="card-img-top " />
+                    <div class="card-body">
+                        <h5 class="card-title text-truncate">@post.Title</h5>
+                        @post.Category.CategoryName
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
+<script src="~/js/carousel.js"></script>
 <script src="~/lib/bootstrap/dist/js/owl.carousel.min.js"></script>
 

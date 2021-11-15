@@ -8,7 +8,7 @@ namespace CollaborativeBlog.Models
     public class Image
     {
         public int ImageId { get; set; }
-        public string ImageName { get; set; }
+        public Uri ImageUri { get; set; }
         public Post Post { get; set; }
     }
 }

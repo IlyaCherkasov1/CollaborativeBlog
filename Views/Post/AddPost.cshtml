@@ -105,6 +105,7 @@
                     e.preventDefault();
                     e.stopPropagation();
                     myDropzone.processQueue();
+                  
                 });
 
                 this.on("sendingmultiple", function () {
@@ -112,7 +113,11 @@
                     for (instance in CKEDITOR.instances) {
                         CKEDITOR.instances[instance].updateElement();
                     }
-                });         
+                });
+                this.on("success", function (file, response) {
+                    window.location = response.urllink;
+                
+                });
             }
         }
     </script>
