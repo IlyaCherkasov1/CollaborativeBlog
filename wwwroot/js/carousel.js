@@ -6,9 +6,9 @@
         items: 10,
         nav: true,
         loop: true,
-        margin: 40,
-        padding: 10,
-        stagePadding: 10,
+        margin: 5,
+        padding: 5,
+        stagePadding: 5,
         responsive: {
             0: {
                 items: 2,

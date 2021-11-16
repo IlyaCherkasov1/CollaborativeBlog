@@ -11,9 +11,10 @@
         @foreach (var tag in Model.AllTags)
         {
             <div class="ms-2 me-2">
-                <div class="card">
-                    <div  class="card-body">
-                        <a  class="card-title" asp-controller="Home" asp-action="Index" asp-route-tag="@tag">#@tag </a>
+                <div  >
+                    <div >
+                          <a asp-controller="Home" asp-action="Index" asp-route-tag="@tag">#@tag </a>
+                      
                     </div>
                 </div>
             </div>

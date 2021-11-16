@@ -95,3 +95,12 @@ object-fit:cover;
 .owl-theme, .owl-nav[class*="owl-"]:hover{
     background:transparent;
 }
+
+
+.carousel-inner img {
+    width: 700px;
+    height: 400px;
+    max-width:700px;
+    max-height:400px;
+}
+

@@ -22,6 +22,10 @@ namespace CollaborativeBlog.Controllers
             this.db = db;
         }
 
+        public IActionResult Test()
+        {
+            return View();
+        }
         public IActionResult Index(string? tag)
         {
             IEnumerable<Post> posts = db.Posts.Include(i => i.Images).Include(t => t.Tags).Include(c => c.Category).ToList();
