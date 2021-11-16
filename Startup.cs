@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace CollaborativeBlog
@@ -29,14 +30,46 @@ namespace CollaborativeBlog
             string connection = Configuration.GetConnectionString("DefaultConnection");
 
             services.AddDbContext<ApplicationContext>(options =>
-                options.UseSqlServer(connection));
+                options.UseSqlServer(connection)).AddIdentity<ApplicationUser, ApplicationRole>()
+              .AddEntityFrameworkStores<ApplicationContext>(); ;
+
+            services.AddAuthentication().AddFacebook(config =>
+            {
+                config.AppId = Configuration["Authentication:Facebook:AppId"];
+                config.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+
+            })
+            .AddGoogle(config =>
+            {
+                config.ClientId = Configuration["Authentication:Google:ClientId"];
+                config.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
+            });
+
+            services.ConfigureApplicationCookie(config => config.LoginPath = "/Account/Login");
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Administrator", builder =>
+                {
+                    builder.RequireClaim(ClaimTypes.Role, "Administrator");
+                });
+
+                options.AddPolicy("Manager", builder =>
+                {
+                    builder.RequireAssertion(x => x.User.HasClaim(ClaimTypes.Role, "Manager")
+                                                  || x.User.HasClaim(ClaimTypes.Role, "Administrator"));
+                });
+
+            });
+
 
             var blobConnection = Configuration.GetValue<string>("BlobConnection");
             services.AddSingleton(x => new BlobServiceClient(blobConnection));
             services.AddSingleton<IBlobService, BlobService>();
-            services.AddControllersWithViews();
 
-            
+            services.AddControllersWithViews(options => { options.SuppressAsyncSuffixInActionNames = false; });
+
+
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -56,6 +89,7 @@ namespace CollaborativeBlog
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

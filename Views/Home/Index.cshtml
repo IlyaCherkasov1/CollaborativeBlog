@@ -1,6 +1,4 @@
-﻿
-
-<link rel="stylesheet" href="~/lib/bootstrap/dist/css/owl.carousel.min.css" />
+﻿<link rel="stylesheet" href="~/lib/bootstrap/dist/css/owl.carousel.min.css" />
 <link rel="stylesheet" href="~/lib/bootstrap/dist/css/owl.theme.default.min.css" />
 
 <h1>Публикации по тэгам:</h1>
@@ -14,7 +12,6 @@
                 <div  >
                     <div >
                           <a asp-controller="Home" asp-action="Index" asp-route-tag="@tag">#@tag </a>
-                      
                     </div>
                 </div>
             </div>
@@ -56,7 +53,10 @@
                 <div class="card">
                     <img src="@post.Images[0].ImageUri" class="card-img-top " />
                     <div class="card-body">
-                        <h5 class="card-title text-truncate">@post.Title</h5>
+                        <h5 class="card-title text-truncate">
+                            <a  asp-controller="Post" asp-action="PostDetails" asp-route-postId="@post.PostId">
+                                @post.Title </a>
+                        </h5>
                         @post.Category.CategoryName
                     </div>
                 </div>
@@ -78,7 +78,11 @@
                 <div class="card">
                     <img src="@post.Images[0].ImageUri" class="card-img-top " />
                     <div class="card-body">
-                        <h5 class="card-title text-truncate">@post.Title</h5>
+                        <h5 class="card-title text-truncate">
+                            <a asp-controller="Post" asp-action="PostDetails" asp-route-postId="@post.PostId">
+                                @post.Title
+                            </a>
+                        </h5>
                         @post.Category.CategoryName
                     </div>
                 </div>

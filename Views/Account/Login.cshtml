@@ -1,0 +1,22 @@
+﻿@model LoginViewModel
+
+@if (User.Identity.IsAuthenticated)
+{
+    <h1>Welcome!w</h1>
+        
+    <br />
+    <button class="btn btn-outline-danger" onclick="location.href='@Url.Action("LogOff", "Account")'">Log off</button>
+    <br />
+}
+else
+{
+    <h1> Auntification: </h1>
+    <form asp-controller="Account" asp-action="ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl">
+        @foreach (var provider in Model.ExternalProviders)
+        {
+            <button type="submit" name="provider" class="btn btn-outline-info" value="@provider.Name">
+                @provider.DisplayName
+            </button>
+        }
+    </form>
+}
