@@ -2,22 +2,22 @@
 
 namespace CollaborativeBlog.Migrations
 {
-    public partial class ImageUri : Migration
+    public partial class addFistName : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.RenameColumn(
-                name: "ImageName",
-                table: "Image",
-                newName: "ImageUri");
+                name: "Name",
+                table: "AspNetUsers",
+                newName: "FirstName");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.RenameColumn(
-                name: "ImageUri",
-                table: "Image",
-                newName: "ImageName");
+                name: "FirstName",
+                table: "AspNetUsers",
+                newName: "Name");
         }
     }
 }

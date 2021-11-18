@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,10 +15,12 @@ namespace CollaborativeBlog.ViewModels
 
         [Required]
         public string GivenName { get; set; }
+
         [Required]
         public string ReturnUrl { get; set; }
-        [Required]
 
+        [Required]
         public string Email { get; set; }
+
     }
 }

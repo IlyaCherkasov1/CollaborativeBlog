@@ -1,4 +1,5 @@
-﻿using CollaborativeBlog.Models;
+﻿
+using CollaborativeBlog.Models;
 using CollaborativeBlog.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -15,10 +16,10 @@ namespace CollaborativeBlog.Controllers
     [Authorize]
     public class AccountController : Controller
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
 
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -34,7 +35,7 @@ namespace CollaborativeBlog.Controllers
             });
         }
 
-        [Authorize(Policy ="Administrator")]
+        [Authorize(Policy = "Administrator")]
         public IActionResult Administrator()
         {
             return View();
@@ -45,8 +46,6 @@ namespace CollaborativeBlog.Controllers
         {
             return View();
         }
-
-
 
         [AllowAnonymous]
         public IActionResult ExternalLogin(string provider, string returnUrl)
@@ -92,13 +91,13 @@ namespace CollaborativeBlog.Controllers
 
             }
 
-            var user = new ApplicationUser(model.NameIdentifier, model.Email);
+            var user = new User(model.NameIdentifier, model.Email);
             var result = await _userManager.CreateAsync(user);
 
 
             if (result.Succeeded)
             {
-           //     var clamsResult = await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.GivenName, model.GivenName));
+                //     var clamsResult = await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.GivenName, model.GivenName));
                 var clamsResult = await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, "Administrator"));
                 if (clamsResult.Succeeded)
                 {

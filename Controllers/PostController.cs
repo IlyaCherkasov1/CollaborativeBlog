@@ -1,7 +1,10 @@
 ﻿using CollaborativeBlog.Models;
 using CollaborativeBlog.Services;
 using CollaborativeBlog.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -13,15 +16,18 @@ using System.Threading.Tasks;
 
 namespace CollaborativeBlog.Controllers
 {
+    [Authorize]
     public class PostController : Controller
     {
         private readonly ApplicationContext db;
+        private readonly UserManager<User> _userManager;
         private readonly IBlobService _blobService;
 
-        public PostController(ApplicationContext db, IBlobService blobService)
+        public PostController(ApplicationContext db, IBlobService blobService, UserManager<User> userManager)
         {
             this.db = db;
             _blobService = blobService;
+            _userManager = userManager;
         }
 
         [HttpGet]
@@ -32,12 +38,12 @@ namespace CollaborativeBlog.Controllers
                 Categories = db.Categories,
                 Tags = db.Tags
             };
-
             return View(addpostviewmodel);
         }
 
+        
         [HttpPost]
-        public async Task<IActionResult> AddPostAsync(PostViewModels postView)
+        public async Task<IActionResult> AddPost(PostViewModels postView)
         {
             Post post = new Post
             {
@@ -47,6 +53,8 @@ namespace CollaborativeBlog.Controllers
                 PublicationDate = DateTime.Now,
                 Rating = postView.Rating,
                 CategoryId = postView.CategoryId,
+                UserId = _userManager.GetUserId(User),
+                User = await _userManager.FindByNameAsync(User.Identity.Name),
                 Category = db.Categories.Where(x => x.CategoryId == postView.CategoryId).First(),
                 Tags = db.Tags.Where(t => postView.TagsId.Contains(t.TagId)).ToList()
             };
@@ -74,6 +82,7 @@ namespace CollaborativeBlog.Controllers
              return Json(Url.Action("Index", "Home"));
         }
 
+        [AllowAnonymous]
         public IActionResult PostDetails(int postId)
         {
             Post post =  db.Posts.Where(p => p.PostId == postId).Include(i => i.Images)

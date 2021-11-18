@@ -16,6 +16,8 @@ namespace CollaborativeBlog.Models
         public List<Image> Images { get; set; }
         public int CategoryId { get; set; }
         public Category Category { get; set; }
+        public string UserId { get; set; }
+        public User User { get; set; }
         public List<Tag> Tags { get; set; }
     }
 }

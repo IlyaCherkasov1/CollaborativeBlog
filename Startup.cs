@@ -1,9 +1,11 @@
+
 using Azure.Storage.Blobs;
 using CollaborativeBlog.Models;
 using CollaborativeBlog.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,19 +32,22 @@ namespace CollaborativeBlog
             string connection = Configuration.GetConnectionString("DefaultConnection");
 
             services.AddDbContext<ApplicationContext>(options =>
-                options.UseSqlServer(connection)).AddIdentity<ApplicationUser, ApplicationRole>()
+                options.UseSqlServer(connection)).AddIdentity<User, IdentityRole>()
               .AddEntityFrameworkStores<ApplicationContext>(); ;
 
+        
             services.AddAuthentication().AddFacebook(config =>
             {
                 config.AppId = Configuration["Authentication:Facebook:AppId"];
                 config.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+           //     config.SignInScheme = IdentityConstants.ExternalScheme;
 
             })
             .AddGoogle(config =>
             {
                 config.ClientId = Configuration["Authentication:Google:ClientId"];
                 config.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
+          //      config.SignInScheme = IdentityConstants.ExternalScheme;
             });
 
             services.ConfigureApplicationCookie(config => config.LoginPath = "/Account/Login");
@@ -67,6 +72,7 @@ namespace CollaborativeBlog
             services.AddSingleton(x => new BlobServiceClient(blobConnection));
             services.AddSingleton<IBlobService, BlobService>();
 
+          
             services.AddControllersWithViews(options => { options.SuppressAsyncSuffixInActionNames = false; });
 
 

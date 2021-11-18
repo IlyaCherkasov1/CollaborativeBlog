@@ -1,0 +1,20 @@
+﻿@model IEnumerable<string>
+
+<table class="table">
+    <tr><th>Post Name</th><th>Test column</th><th></th></tr>
+    @foreach (var post in Model)
+    {
+        <tr>
+            <td>@post</td>
+            <td>Test</td>
+            <td>
+                <form  method="post">
+                    <a class="btn btn-sm btn-primary">Изменить</a>
+                    <button type="submit" class="btn btn-sm btn-danger">
+                        Удалить
+                    </button>
+                </form>
+            </td>
+        </tr>
+    }
+</table>

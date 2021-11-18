@@ -7,18 +7,15 @@ using System.Threading.Tasks;
 
 namespace CollaborativeBlog.Models
 {
-    public class ApplicationUser : IdentityUser<Guid>
+    public class User : IdentityUser
     {
-        public ApplicationUser()
-        {
-
-        }
-
-        public ApplicationUser(string userName, string email) : base(userName)
+        public User(string userName, string email) : base(userName)
         {
             Email = email;
+
+            Posts = new List<Post>();
         }
 
-        public string GivenName { get; set; }
+        public List<Post> Posts { get; set; }
     }
 }

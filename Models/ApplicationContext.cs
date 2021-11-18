@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CollaborativeBlog.Models
 {
-    public class ApplicationContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
+    public class ApplicationContext : IdentityDbContext<User>
     {
         public ApplicationContext(DbContextOptions<ApplicationContext> options)
            : base(options)
