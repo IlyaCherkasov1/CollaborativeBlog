@@ -97,10 +97,8 @@ namespace CollaborativeBlog.Controllers
 
             if (result.Succeeded)
             {
-                //     var clamsResult = await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.GivenName, model.GivenName));
-                var clamsResult = await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, "Administrator"));
-                if (clamsResult.Succeeded)
-                {
+        
+           
 
                     var identityResult = await _userManager.AddLoginAsync(user, info);
                     if (identityResult.Succeeded)
@@ -109,7 +107,7 @@ namespace CollaborativeBlog.Controllers
                         return Redirect("/Home/Index");
 
                     }
-                }
+                
             }
 
             return View(model);

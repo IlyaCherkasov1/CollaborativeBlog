@@ -1,0 +1,22 @@
+﻿@model IEnumerable<Post>
+
+    <a asp-action="AddPost">Добавить публикацию</a>
+
+    <table class="table">
+        <tr><th>Post Name</th><th>Test column</th><th></th></tr>
+        @foreach (var post in Model)
+        {
+            <tr>
+                <td>@post.Title</td>
+                <td>Test</td>
+                <td>
+                    <form method="post">
+                        <a class="btn btn-sm btn-primary" asp-action="EditPost" asp-route-id="@post.PostId">Изменить</a>
+                        <button type="submit" class="btn btn-sm btn-danger">
+                            Удалить
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </table>

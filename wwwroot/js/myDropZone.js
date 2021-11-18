@@ -29,5 +29,13 @@ Dropzone.options.uploader = {
             }
         });
 
+        this.on("success", function (file, response) {
+
+            window.location = response.urllink;
+        });
+
+        //dzClosure.on('complete', function () {
+        //    window.location.href = base_url + 'admin/saveProject';
+        //})
     }
 }

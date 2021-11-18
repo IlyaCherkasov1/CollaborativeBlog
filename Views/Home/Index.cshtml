@@ -1,26 +1,11 @@
 ﻿<link rel="stylesheet" href="~/lib/bootstrap/dist/css/owl.carousel.min.css" />
 <link rel="stylesheet" href="~/lib/bootstrap/dist/css/owl.theme.default.min.css" />
 
-<p>@User.Identity.Name</p>
-
 
 <h1>Публикации по тэгам:</h1>
 <p>Обновляется после каждой добавленной записи</p>
 
-<div class="container">
-    <div class="owl-one owl-carousel owl-theme">
-        @foreach (var tag in Model.AllTags)
-        {
-            <div class="ms-2 me-2">
-                <div>
-                    <div>
-                        <a asp-controller="Home" asp-action="Index" asp-route-tag="@tag">#@tag </a>
-                    </div>
-                </div>
-            </div>
-        }
-    </div>
-</div>
+
 
 <div class="container">
     <div class="owl-two owl-carousel owl-theme">
@@ -89,6 +74,22 @@
                             </a>
                         </h5>
                         @post.Category.CategoryName
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
+<div class="container">
+    <div>
+        @foreach (var tag in Model.AllTags)
+        {
+            <div class="ms-2 me-2">
+                <div>
+                    <div>
+                        <a asp-controller="Home" asp-action="Index" asp-route-tag="@tag">#@tag </a>
                     </div>
                 </div>
             </div>

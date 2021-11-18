@@ -3,7 +3,7 @@
         autoplay: false,
         autoplayhoverpause: true,
         autoplaytimeout: 50,
-        items: 10,
+        items: 30,
         nav: true,
         loop: true,
         margin: 5,
@@ -11,23 +11,23 @@
         stagePadding: 5,
         responsive: {
             0: {
-                items: 2,
+                items: 30,
                 dots: false
             },
             485: {
-                items: 3,
+                items: 30,
                 dots: false
             },
             728: {
-                items: 6,
+                items: 30,
                 dots: false
             },
             960: {
-                items: 8,
+                items: 30,
                 dots: false
             },
             1200: {
-                items: 10,
+                items: 30,
                 dots: false
             },
         }
