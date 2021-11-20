@@ -53,15 +53,22 @@ namespace CollaborativeBlog
             services.ConfigureApplicationCookie(config =>
             {
                 config.LoginPath = "/Account/Login";
-                config.AccessDeniedPath = "/Account/Login";
+          //      config.AccessDeniedPath = "/Account/Login";
             });
 
             services.AddAuthorization(options =>
             {
+                options.AddPolicy("User", builder =>
+                {
+                    builder.RequireClaim(ClaimTypes.Role, "User");
+                });
+
                 options.AddPolicy("Admin", builder =>
                 {
-                    builder.RequireClaim(ClaimTypes.Role, "Admin");
+                    builder.RequireAssertion(x => x.User.HasClaim(ClaimTypes.Role, "User")
+                                                  || x.User.HasClaim(ClaimTypes.Role, "Admin"));
                 });
+
             });
 
 

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace CollaborativeBlog.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class UsersController : Controller
     {
         private readonly ApplicationContext db;

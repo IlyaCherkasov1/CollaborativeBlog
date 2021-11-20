@@ -23,8 +23,8 @@
                     }
 
                 </header>
-              
-       
+
+
                 <figure class="mb-4">
                     <div id="carouselExampleIndicators" class="carousel slide box" data-ride="carousel">
                         <ol class="carousel-indicators">
@@ -41,7 +41,7 @@
                                 <div class="carousel-item ">
                                     <img class="d-block img-fluid rounded " src="@Model.Images[i].ImageUri" alt="Second slide" width="800" height="500">
                                 </div>
-                             }
+                            }
                         </div>
                         <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
                             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -67,6 +67,11 @@
                 </section>
 
             </article>
+
+            <div id="like" class="d-inline">@ViewBag.CountLike</div>
+            <a asp-action="Like" asp-route-postId="@Model.PostId">Like</a>
+
+
             <!-- Comments section-->
             <section class="mb-5">
                 <div class="card bg-light">

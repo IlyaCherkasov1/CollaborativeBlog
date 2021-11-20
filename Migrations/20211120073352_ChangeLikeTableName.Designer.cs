@@ -4,14 +4,16 @@ using CollaborativeBlog.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CollaborativeBlog.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20211120073352_ChangeLikeTableName")]
+    partial class ChangeLikeTableName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -61,19 +63,9 @@ namespace CollaborativeBlog.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("PostId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("LikeId");
 
-                    b.HasIndex("PostId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Likes");
+                    b.ToTable("Like");
                 });
 
             modelBuilder.Entity("CollaborativeBlog.Models.Post", b =>
@@ -191,6 +183,36 @@ namespace CollaborativeBlog.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
+                });
+
+            modelBuilder.Entity("LikePost", b =>
+                {
+                    b.Property<int>("LikesLikeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PostsPostId")
+                        .HasColumnType("int");
+
+                    b.HasKey("LikesLikeId", "PostsPostId");
+
+                    b.HasIndex("PostsPostId");
+
+                    b.ToTable("LikePost");
+                });
+
+            modelBuilder.Entity("LikeUser", b =>
+                {
+                    b.Property<int>("LikesLikeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UsersId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("LikesLikeId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("LikeUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -348,23 +370,6 @@ namespace CollaborativeBlog.Migrations
                     b.Navigation("Post");
                 });
 
-            modelBuilder.Entity("CollaborativeBlog.Models.Like", b =>
-                {
-                    b.HasOne("CollaborativeBlog.Models.Post", "Post")
-                        .WithMany("Likes")
-                        .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CollaborativeBlog.Models.User", "User")
-                        .WithMany("Likes")
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("Post");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("CollaborativeBlog.Models.Post", b =>
                 {
                     b.HasOne("CollaborativeBlog.Models.Category", "Category")
@@ -380,6 +385,36 @@ namespace CollaborativeBlog.Migrations
                     b.Navigation("Category");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("LikePost", b =>
+                {
+                    b.HasOne("CollaborativeBlog.Models.Like", null)
+                        .WithMany()
+                        .HasForeignKey("LikesLikeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CollaborativeBlog.Models.Post", null)
+                        .WithMany()
+                        .HasForeignKey("PostsPostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("LikeUser", b =>
+                {
+                    b.HasOne("CollaborativeBlog.Models.Like", null)
+                        .WithMany()
+                        .HasForeignKey("LikesLikeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CollaborativeBlog.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -456,14 +491,10 @@ namespace CollaborativeBlog.Migrations
             modelBuilder.Entity("CollaborativeBlog.Models.Post", b =>
                 {
                     b.Navigation("Images");
-
-                    b.Navigation("Likes");
                 });
 
             modelBuilder.Entity("CollaborativeBlog.Models.User", b =>
                 {
-                    b.Navigation("Likes");
-
                     b.Navigation("Posts");
                 });
 #pragma warning restore 612, 618

@@ -33,19 +33,7 @@ namespace CollaborativeBlog.Controllers
             {
                 ExternalProviders = externalProviders
             });
-        }
-
-        [Authorize(Policy = "Administrator")]
-        public IActionResult Administrator()
-        {
-            return View();
-        }
-
-        [Authorize(Policy = "Manager")]
-        public IActionResult Manager()
-        {
-            return View();
-        }
+        } 
 
         [AllowAnonymous]
         public IActionResult ExternalLogin(string provider, string returnUrl)

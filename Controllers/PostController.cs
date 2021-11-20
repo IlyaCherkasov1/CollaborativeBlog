@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace CollaborativeBlog.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public class PostController : Controller
     {
         private readonly ApplicationContext db;
@@ -31,12 +31,15 @@ namespace CollaborativeBlog.Controllers
             _userManager = userManager;
         }
 
+        [Authorize(Roles = "User, Admin")]
         public IActionResult Index()
         {
             string id = _userManager.GetUserId(User);
             List<Post> posts = db.Posts.Where(u => u.UserId == id).ToList();
             return View(posts);
         }
+
+        [Authorize(Roles = "Admin")]
 
         public IActionResult AddPost()
         {
@@ -50,7 +53,8 @@ namespace CollaborativeBlog.Controllers
             return View(addpostviewmodel);
         }
 
-       
+      [Authorize(Roles ="Admin")]
+
         [HttpPost]
         public async Task<IActionResult> AddPost(PostViewModels postView)
         {
@@ -73,14 +77,14 @@ namespace CollaborativeBlog.Controllers
             return RedirectToAction("AddPostImage",new {id = post.PostId});
         }
 
-      
+       [Authorize(Roles ="Admin")]
         public IActionResult AddPostImage(int id)
         {
-          
             return View(id);
         }
 
-     
+
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> AddPostImage(IEnumerable<IFormFile> images, int postId)
         {
@@ -113,7 +117,7 @@ namespace CollaborativeBlog.Controllers
             return Redirect("/Home/Index");
         }
 
-     
+        [Authorize(Roles ="Admin")]
         public async Task<IActionResult> DeletePost(int postId)
         {
             Post post = db.Posts.Include(i => i.Images).Where(p => p.PostId == postId).First();
@@ -128,7 +132,7 @@ namespace CollaborativeBlog.Controllers
             return RedirectToAction("Index");
         }
 
-       
+        [Authorize(Roles ="Admin")]
         public IActionResult EditPost(int id)
         {
             Post post = db.Posts.Include(t => t.Tags).Include(c => c.Category).Where(p => p.PostId == id).FirstOrDefault();
@@ -153,7 +157,7 @@ namespace CollaborativeBlog.Controllers
         }
 
 
-      
+        [Authorize(Roles ="Admin")]
         [HttpPost]
         public async Task<IActionResult> EditPost(PostViewModels postView)
         {
@@ -179,7 +183,38 @@ namespace CollaborativeBlog.Controllers
             Post post =  db.Posts.Where(p => p.PostId == postId).Include(i => i.Images)
                 .Include(t => t.Tags).Include(c=>c.Category).First();
 
+            int countLike = db.Posts.Where(p => p.PostId == postId).Include(l => l.Likes).Select(p => p.Likes.Count()).First();
+            ViewBag.CountLike = countLike;
+
             return View(post);
+        }
+
+
+        public async Task<IActionResult> Like(int postId)
+        {
+            Post post =  db.Posts.Where(p => p.PostId == postId).First();
+            string userId =  _userManager.GetUserId(User);
+            User user = await _userManager.FindByNameAsync(User.Identity.Name);
+  
+            if (db.Likes.Any(p => p.PostId == postId && p.UserId == userId))
+            {
+                Like likedPost = db.Likes.Where(p => p.PostId == postId && p.UserId == userId).First();
+                db.Likes.Remove(likedPost);
+            }
+            else
+            {
+                Like like = new Like
+                {
+                    PostId = postId,
+                    Post = post,
+                    UserId = userId,
+                    User = user
+                };
+
+                await db.Likes.AddAsync(like);
+            }
+            await db.SaveChangesAsync();
+            return RedirectToAction("PostDetails",new { postId = post.PostId });
         }
     }
 }

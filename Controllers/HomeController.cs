@@ -16,7 +16,6 @@ namespace CollaborativeBlog.Controllers
     {
         private readonly ApplicationContext db;
 
-
         public HomeController(ApplicationContext db)
         {
             this.db = db;
@@ -40,7 +39,6 @@ namespace CollaborativeBlog.Controllers
             else
             {
                postWithTags = posts;
-
             }
 
             var postModel = new HomePostViewModel

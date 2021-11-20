@@ -19,5 +19,6 @@ namespace CollaborativeBlog.Models
         public string UserId { get; set; }
         public User User { get; set; }
         public List<Tag> Tags { get; set; }
+        public List<Like> Likes { get; set; }
     }
 }
