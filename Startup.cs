@@ -40,31 +40,28 @@ namespace CollaborativeBlog
             {
                 config.AppId = Configuration["Authentication:Facebook:AppId"];
                 config.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
-           //     config.SignInScheme = IdentityConstants.ExternalScheme;
+    
 
             })
             .AddGoogle(config =>
             {
                 config.ClientId = Configuration["Authentication:Google:ClientId"];
                 config.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
-          //      config.SignInScheme = IdentityConstants.ExternalScheme;
+        
             });
 
-            services.ConfigureApplicationCookie(config => config.LoginPath = "/Account/Login");
+            services.ConfigureApplicationCookie(config =>
+            {
+                config.LoginPath = "/Account/Login";
+                config.AccessDeniedPath = "/Account/Login";
+            });
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("Administrator", builder =>
+                options.AddPolicy("Admin", builder =>
                 {
-                    builder.RequireClaim(ClaimTypes.Role, "Administrator");
+                    builder.RequireClaim(ClaimTypes.Role, "Admin");
                 });
-
-                options.AddPolicy("Manager", builder =>
-                {
-                    builder.RequireAssertion(x => x.User.HasClaim(ClaimTypes.Role, "Manager")
-                                                  || x.User.HasClaim(ClaimTypes.Role, "Administrator"));
-                });
-
             });
 
 

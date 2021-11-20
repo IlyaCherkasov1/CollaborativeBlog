@@ -13,7 +13,7 @@ namespace CollaborativeBlog.Models
         public string Description { get; set; }
         public DateTime PublicationDate { get; set; }
         public int Rating { get; set; }
-        public List<Image> Images { get; set; }
+        public List<Image> Images { get; set; } 
         public int CategoryId { get; set; }
         public Category Category { get; set; }
         public string UserId { get; set; }

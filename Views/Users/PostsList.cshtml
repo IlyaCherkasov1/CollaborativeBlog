@@ -1,16 +1,18 @@
-﻿@model IEnumerable<string>
+﻿@model IEnumerable<Post>
+
+<a asp-action="AddPost">Добавить публикацию</a>
 
 <table class="table">
     <tr><th>Post Name</th><th>Test column</th><th></th></tr>
     @foreach (var post in Model)
     {
         <tr>
-            <td>@post</td>
+            <td>@post.Title</td>
             <td>Test</td>
             <td>
-                <form  method="post">
-                    <a class="btn btn-sm btn-primary">Изменить</a>
-                    <button type="submit" class="btn btn-sm btn-danger">
+                <form method="post">
+                    <a class="btn btn-sm btn-primary" asp-controller="Post" asp-action="EditPost" asp-route-id="@post.PostId">Изменить</a>
+                    <button type="submit" class="btn btn-sm btn-danger" asp-controller="Post" asp-action="DeletePost" asp-route-postId="@post.PostId">
                         Удалить
                     </button>
                 </form>
@@ -18,3 +20,4 @@
         </tr>
     }
 </table>
+

@@ -15,24 +15,23 @@ Dropzone.options.uploader = {
     init: function () {
         var myDropzone = this;
         document.getElementById("submit").addEventListener("click", function (e) {
-
             e.preventDefault();
             e.stopPropagation();
             myDropzone.processQueue();
 
         });
 
-        this.on("sendingmultiple", function () {
+        //this.on("sendingmultiple", function () {
 
-            for (instance in CKEDITOR.instances) {
-                CKEDITOR.instances[instance].updateElement();
-            }
-        });
+        //    for (instance in CKEDITOR.instances) {
+        //        CKEDITOR.instances[instance].updateElement();
+        //    }
+        //});
 
-        this.on("success", function (file, response) {
+        //this.on("success", function (file, response) {
 
-            window.location = response.urllink;
-        });
+        //    window.location = response.urllink;
+        //});
 
         //dzClosure.on('complete', function () {
         //    window.location.href = base_url + 'admin/saveProject';

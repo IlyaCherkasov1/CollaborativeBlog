@@ -97,15 +97,11 @@ namespace CollaborativeBlog.Controllers
 
             if (result.Succeeded)
             {
-        
-           
-
                     var identityResult = await _userManager.AddLoginAsync(user, info);
                     if (identityResult.Succeeded)
                     {
                         await _signInManager.SignInAsync(user, false);
                         return Redirect("/Home/Index");
-
                     }
                 
             }

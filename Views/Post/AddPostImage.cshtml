@@ -1,0 +1,21 @@
+﻿<script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
+<script src="~/js/mydropzone.js"></script>
+
+
+<form asp-controller="Post" asp-action="AddPostImage"
+      class="dropzone"
+      id="uploader">
+
+    <div class="previews"></div>
+
+    <input type="hidden" name="postId" value="@Model" />
+</form>
+
+<button type="submit" id="submit" form="uploader" class="btn btn-primary btn-lg btn-block"
+        back>
+    Upload
+</button>
+
+
+

@@ -27,8 +27,8 @@ namespace CollaborativeBlog.Controllers
 
         public IActionResult PostsList(string id)
         {
-            List<string> publicationNames = db.Posts.Where(u => u.UserId == id).Select(t => t.Title).ToList();
-            return View(publicationNames);
+           List<Post> posts = db.Posts.Where(u => u.UserId == id).ToList();
+           return View(posts);
         }
     }
 }

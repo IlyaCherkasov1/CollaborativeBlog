@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace CollaborativeBlog.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class PostController : Controller
     {
         private readonly ApplicationContext db;
@@ -33,12 +34,14 @@ namespace CollaborativeBlog.Controllers
         public IActionResult Index()
         {
             string id = _userManager.GetUserId(User);
-            List<Post> publicationNames = db.Posts.Where(u => u.UserId == id).ToList();
-            return View(publicationNames);
+            List<Post> posts = db.Posts.Where(u => u.UserId == id).ToList();
+            return View(posts);
         }
 
         public IActionResult AddPost()
         {
+            ViewBag.CategoryId = new SelectList(db.Categories, "CategoryId", "CategoryName");
+            ViewBag.TagsId = new SelectList(db.Tags, "TagId", "TagName");
             var addpostviewmodel = new AddPostViewModel
             {
                 Categories = db.Categories,
@@ -47,7 +50,7 @@ namespace CollaborativeBlog.Controllers
             return View(addpostviewmodel);
         }
 
-        
+       
         [HttpPost]
         public async Task<IActionResult> AddPost(PostViewModels postView)
         {
@@ -64,37 +67,82 @@ namespace CollaborativeBlog.Controllers
                 Category = db.Categories.Where(x => x.CategoryId == postView.CategoryId).First(),
                 Tags = db.Tags.Where(t => postView.TagsId.Contains(t.TagId)).ToList()
             };
-            List<Image> images = new List<Image>();                   
+            db.Posts.Add(post);
+            await db.SaveChangesAsync();
+
+            return RedirectToAction("AddPostImage",new {id = post.PostId});
+        }
+
+      
+        public IActionResult AddPostImage(int id)
+        {
+          
+            return View(id);
+        }
+
+     
+        [HttpPost]
+        public async Task<IActionResult> AddPostImage(IEnumerable<IFormFile> images, int postId)
+        {
+            if (images == null)
+            {
+                return Redirect("/Home/Index");
+            }
+
+            Post post = db.Posts.Where(p => p.PostId == postId).First();
+
+            List<Image> imgs = new List<Image>();
             List<string> fileNames = new List<string>();
             List<Uri> imageBlobs = new List<Uri>();
 
-           
-
-            foreach (var image in postView.Images)
+            foreach (var image in images)
             {
                 string fileName = Guid.NewGuid() + Path.GetExtension(image.FileName);
-             
+
                 fileNames.Add(fileName);
                 var uploadRes = await _blobService.UploadBlob(fileName, image, "images");
                 var getRes = await _blobService.GetBlob(fileName, "images");
                 Uri uri = new Uri(getRes);
                 imageBlobs.Add(uri);
-                images.Add(new Image { ImageUri = uri, Post = post });
+                imgs.Add(new Image { ImageUri = uri, Post = post });
             }
-
-            post.Images = images;
-            db.Posts.Add(post);
-          
+            post.Images = imgs;          
+         
             await db.SaveChangesAsync();
 
             return Redirect("/Home/Index");
         }
 
+     
+        public async Task<IActionResult> DeletePost(int postId)
+        {
+            Post post = db.Posts.Include(i => i.Images).Where(p => p.PostId == postId).First();
+            db.Posts.Remove(post);
+            await db.SaveChangesAsync();
 
+            foreach (var image in post.Images)
+            {
+              await _blobService.DeleteBlob(image.ImageUri.AbsoluteUri, "images");
+            }
+
+            return RedirectToAction("Index");
+        }
+
+       
         public IActionResult EditPost(int id)
         {
-            Post post = db.Posts.Where(p => p.PostId == id).FirstOrDefault();
-          
+            Post post = db.Posts.Include(t => t.Tags).Include(c => c.Category).Where(p => p.PostId == id).FirstOrDefault();
+            ViewBag.CategoryId = new SelectList(db.Categories.ToList(), "CategoryId","CategoryName", post.CategoryId);
+
+            List<int> selectedTagId = post.Tags.Select(t => t.TagId).ToList();
+            IEnumerable<SelectListItem> tagItems = db.Tags.Select(t => new SelectListItem
+            {
+                  Value = t.TagId.ToString(),
+                  Text = t.TagName,
+                  Selected = selectedTagId.Contains(t.TagId)
+            });
+            ViewBag.TagsId = tagItems;
+
             var editPostModel = new EditPostViewModel
             {
                 Post = post,
@@ -104,47 +152,28 @@ namespace CollaborativeBlog.Controllers
             return View(editPostModel);
         }
 
+
+      
         [HttpPost]
         public async Task<IActionResult> EditPost(PostViewModels postView)
         {
-            Post post = new Post
-            {
-                Title = postView.Title,
-                ShortDescription = postView.ShortDescription,
-                Description = postView.Description,
-                PublicationDate = DateTime.Now,
-                Rating = postView.Rating,
-                CategoryId = postView.CategoryId,
-                UserId = _userManager.GetUserId(User),
-                User = await _userManager.FindByNameAsync(User.Identity.Name),
-                Category = db.Categories.Where(x => x.CategoryId == postView.CategoryId).First(),
-                Tags = db.Tags.Where(t => postView.TagsId.Contains(t.TagId)).ToList()
-            };
-            List<Image> images = new List<Image>();
-            List<string> fileNames = new List<string>();
-            List<Uri> imageBlobs = new List<Uri>();
+            Post post = db.Posts.Include(t => t.Tags).Include(c => c.Category)
+                .Where(p => p.PostId == postView.PostId).First();
 
-            foreach (var image in postView.Images)
-            {
-                string fileName = Guid.NewGuid() + Path.GetExtension(image.FileName);
-
-                fileNames.Add(fileName);
-                var uploadRes = await _blobService.UploadBlob(fileName, image, "images");
-                var getRes = await _blobService.GetBlob(fileName, "images");
-                Uri uri = new Uri(getRes);
-                imageBlobs.Add(uri);
-                images.Add(new Image { ImageUri = uri, Post = post });
-            }
-
-            post.Images = images;
-            db.Posts.Update(post);
+            post.Title = postView.Title;
+            post.ShortDescription = postView.ShortDescription;
+            post.Description = postView.Description;
+            post.PublicationDate = DateTime.Now;
+            post.Rating = postView.Rating;
+            post.CategoryId = postView.CategoryId;
+            post.Category = db.Categories.Where(x => x.CategoryId == postView.CategoryId).First();
+            post.Tags = db.Tags.Where(t => postView.TagsId.Contains(t.TagId)).ToList();
 
             await db.SaveChangesAsync();
 
-            return Redirect("/Home/Index");
+            return RedirectToAction("AddPostImage", new { id = post.PostId });
         }
 
-        [AllowAnonymous]
         public IActionResult PostDetails(int postId)
         {
             Post post =  db.Posts.Where(p => p.PostId == postId).Include(i => i.Images)
@@ -152,7 +181,5 @@ namespace CollaborativeBlog.Controllers
 
             return View(post);
         }
-
-
     }
 }

@@ -1,8 +1,6 @@
 ﻿<script src="~/ckeditor/ckeditor.js"></script>
 <script type="module" src="~/js/bootstrap-tags.js"></script>
 
-<script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
 
 
 <div>
@@ -10,8 +8,7 @@
     <h3>Добавление публикации</h3>
     <p>Для добавление публикации заполните следующие поля:</p>
 
-    <form id="uploader" asp-action="AddPost" asp-controller="Post" class="dropzone border-0"
-          method="post" enctype="multipart/form-data">
+    <form asp-action="AddPost" asp-controller="Post" method="post" enctype="multipart/form-data">
         <input type="hidden" name="PostId" value="0" />
 
         <div class="form-group col-md-15">
@@ -32,43 +29,29 @@
 
         <div class="form-group col-md-15">
             <div>
-                <select name="CategoryId">
-                    <option>Выбирете категорию</option>
-                    @foreach (var category in Model.Categories)
-                    {
-                        <option value="@category.CategoryId">@category.CategoryName</option>
-                    }
-                </select>
+                @Html.DropDownList("CategoryId", null, "---select category---" )
+              
+             
                 <div class="select-arrow"></div>
             </div>
         </div>
 
         <div class="form-group col-md-15">
             <div>
-                <select name="TagsId" class="form-select" multiple>
-
-                    <option selected disabled hidden value="">Choose a tag...</option>
-
-                    @foreach (var tag in Model.Tags)
-                    {
-                        <option value="@tag.TagId">@tag.TagName</option>
-                    }
-
-                </select>
+                @Html.DropDownList("TagsId",null, "Choose a tag...", htmlAttributes: new { @class = "form-select", multiple = "multiple"})
+              
                 <div class="invalid-feedback">Please select a valid tag.</div>
             </div>
         </div>
 
-        <div class="dropzone-previews"></div> 
-
-
+        <div class="panel-body">
+            <button type="submit" id="submit" class="btn btn-primary btn-lg btn-block"
+                    back>
+                Next
+            </button>
+        </div>
     </form>
-    <div class="panel-body">
-        <button type="submit" id="submit" class="btn btn-primary btn-lg btn-block"
-                back>
-            Отправить
-        </button>
-    </div>
+   
 </div>
 
 
@@ -77,6 +60,5 @@
     CKEDITOR.replace('Description');
 </script>
 
-<script src="~/js/myDropZone.js"></script>
 
 
