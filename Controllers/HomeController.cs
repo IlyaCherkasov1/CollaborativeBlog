@@ -25,9 +25,11 @@ namespace CollaborativeBlog.Controllers
         {
             return View();
         }
-        public IActionResult Index(string? tag)
+        public async Task<IActionResult> Index(string? tag)
         {
-            IEnumerable<Post> posts = db.Posts.Include(i => i.Images).Include(t => t.Tags).Include(c => c.Category).ToList();
+            IEnumerable<Post> posts = await db.Posts.Include(i => i.Images).Include(t => t.Tags)
+                .Include(c => c.Category).ToListAsync();
+
             var tags = posts.SelectMany(t => t.Tags.Select(n => n.TagName));
             IEnumerable<Post> highlyRaitedPosts = posts.Where(r => r.Rating > 7);
 
@@ -40,6 +42,7 @@ namespace CollaborativeBlog.Controllers
             {
                postWithTags = posts;
             }
+      
 
             var postModel = new HomePostViewModel
             {

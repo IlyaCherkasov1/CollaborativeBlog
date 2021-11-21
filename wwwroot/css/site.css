@@ -104,3 +104,7 @@ object-fit:cover;
     max-height:400px;
 }
 
+.checked {
+    color: orange;
+}
+

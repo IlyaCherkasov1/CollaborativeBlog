@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,11 +24,11 @@ namespace CollaborativeBlog.Controllers
             this.db = db;
         }
 
-        public IActionResult Index() => View(_userManager.Users.ToList());
+        public async Task<IActionResult> Index() => View(await _userManager.Users.ToListAsync());
 
-        public IActionResult PostsList(string id)
+        public async Task<IActionResult> PostsList(string id)
         {
-           List<Post> posts = db.Posts.Where(u => u.UserId == id).ToList();
+           List<Post> posts = await db.Posts.Where(u => u.UserId == id).ToListAsync();
            return View(posts);
         }
     }

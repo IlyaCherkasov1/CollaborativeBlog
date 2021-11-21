@@ -19,5 +19,7 @@ namespace CollaborativeBlog.Models
         public DbSet<Tag> Tags { get; set; }
         public DbSet<Image> Image { get; set; }
         public DbSet<Like> Likes { get; set; }
+        public DbSet<Rating> Ratings { get; set; }
+
     }
 }

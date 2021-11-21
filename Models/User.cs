@@ -18,6 +18,8 @@ namespace CollaborativeBlog.Models
 
         public List<Post> Posts { get; set; }
 
-        public List<Like> Likes { get; set; }  
+        public List<Like> Likes { get; set; }
+        public List<Rating> Ratings { get; set; }
+
     }
 }

@@ -2,14 +2,11 @@
 <link rel="stylesheet" href="~/lib/bootstrap/dist/css/owl.theme.default.min.css" />
 
 
-<h1>Публикации по тэгам:</h1>
-<p>Обновляется после каждой добавленной записи</p>
-
-
-
 <div class="container">
-    <div class="owl-two owl-carousel owl-theme">
+    <a>Публикации по тэгам:</a>
+    <p>Обновляется после каждой добавленной записи</p>
 
+    <div class="owl-two owl-carousel owl-theme">
         @foreach (var post in Model.PostsWithTags)
         {
             <div class="ms-2 me-2">
@@ -21,7 +18,9 @@
                                 @post.Title
                             </a>
                         </h5>
-                        @post.Category.CategoryName
+                        <p> @post.Category.CategoryName</p>
+                        <p> Raiting: @post.UserRating</p>
+
                     </div>
                 </div>
             </div>
@@ -29,11 +28,12 @@
     </div>
 </div>
 
-
-<h1>Недавно опубликованные:</h1>
-<p>Обновляется после каждой добавленной записи</p>
+<br />
 
 <div class="container">
+    <a>Недавно опубликованные:</a>
+    <p>Обновляется после каждой добавленной записи</p>
+
     <div class="owl-two owl-carousel owl-theme">
 
         @foreach (var post in Model.AllPosts)
@@ -48,6 +48,7 @@
                             </a>
                         </h5>
                         @post.Category.CategoryName
+                        <p> Raiting: @post.UserRating</p>
                     </div>
                 </div>
             </div>
@@ -55,11 +56,12 @@
     </div>
 </div>
 
-
-<h1>Публикации с самым высоким рэйтингом:</h1>
-<p>Обновляется после каждой добавленной записи</p>
+<br />
 
 <div class="container">
+    <a>Публикации с самым высоким рэйтингом:</a>
+    <p>Обновляется после каждой добавленной записи</p>
+
     <div class="owl-three owl-carousel owl-theme">
 
         @foreach (var post in Model.HighlyRatedPublications)
@@ -74,6 +76,7 @@
                             </a>
                         </h5>
                         @post.Category.CategoryName
+                        <p> Raiting: @post.UserRating</p>
                     </div>
                 </div>
             </div>
@@ -81,6 +84,8 @@
     </div>
 </div>
 
+
+<br />
 
 <div class="container">
     <div>
@@ -97,7 +102,5 @@
     </div>
 </div>
 
-
 <script src="~/js/carousel.js"></script>
 <script src="~/lib/bootstrap/dist/js/owl.carousel.min.js"></script>
-

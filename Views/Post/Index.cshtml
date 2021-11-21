@@ -11,6 +11,7 @@
                 <td>Test</td>
                 <td>
                     <form method="post">
+                        <a class="btn btn-sm btn btn-info" asp-action="PostDetails" asp-route-postId="@post.PostId">Открыть</a>
                         <a class="btn btn-sm btn-primary" asp-action="EditPost" asp-route-id="@post.PostId">Изменить</a>
                         <button type="submit" class="btn btn-sm btn-danger" asp-action="DeletePost" asp-route-postId="@post.PostId">
                             Удалить

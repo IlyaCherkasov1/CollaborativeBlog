@@ -32,10 +32,10 @@ namespace CollaborativeBlog.Controllers
         }
 
         [Authorize(Roles = "User, Admin")]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             string id = _userManager.GetUserId(User);
-            List<Post> posts = db.Posts.Where(u => u.UserId == id).ToList();
+            List<Post> posts = await db.Posts.Where(u => u.UserId == id).ToListAsync();
             return View(posts);
         }
 
@@ -71,7 +71,7 @@ namespace CollaborativeBlog.Controllers
                 Category = db.Categories.Where(x => x.CategoryId == postView.CategoryId).First(),
                 Tags = db.Tags.Where(t => postView.TagsId.Contains(t.TagId)).ToList()
             };
-            db.Posts.Add(post);
+            await db.Posts.AddAsync(post);
             await db.SaveChangesAsync();
 
             return RedirectToAction("AddPostImage",new {id = post.PostId});
@@ -93,7 +93,7 @@ namespace CollaborativeBlog.Controllers
                 return Redirect("/Home/Index");
             }
 
-            Post post = db.Posts.Where(p => p.PostId == postId).First();
+            Post post = await db.Posts.Where(p => p.PostId == postId).FirstAsync();
 
             List<Image> imgs = new List<Image>();
             List<string> fileNames = new List<string>();
@@ -120,7 +120,7 @@ namespace CollaborativeBlog.Controllers
         [Authorize(Roles ="Admin")]
         public async Task<IActionResult> DeletePost(int postId)
         {
-            Post post = db.Posts.Include(i => i.Images).Where(p => p.PostId == postId).First();
+            Post post = await db.Posts.Include(i => i.Images).Where(p => p.PostId == postId).FirstAsync();
             db.Posts.Remove(post);
             await db.SaveChangesAsync();
 
@@ -133,10 +133,10 @@ namespace CollaborativeBlog.Controllers
         }
 
         [Authorize(Roles ="Admin")]
-        public IActionResult EditPost(int id)
+        public async Task<IActionResult> EditPost(int id)
         {
-            Post post = db.Posts.Include(t => t.Tags).Include(c => c.Category).Where(p => p.PostId == id).FirstOrDefault();
-            ViewBag.CategoryId = new SelectList(db.Categories.ToList(), "CategoryId","CategoryName", post.CategoryId);
+            Post post = await db.Posts.Include(t => t.Tags).Include(c => c.Category).Where(p => p.PostId == id).FirstAsync();
+            ViewBag.CategoryId = new SelectList(await db.Categories.ToListAsync(), "CategoryId","CategoryName", post.CategoryId);
 
             List<int> selectedTagId = post.Tags.Select(t => t.TagId).ToList();
             IEnumerable<SelectListItem> tagItems = db.Tags.Select(t => new SelectListItem
@@ -161,8 +161,8 @@ namespace CollaborativeBlog.Controllers
         [HttpPost]
         public async Task<IActionResult> EditPost(PostViewModels postView)
         {
-            Post post = db.Posts.Include(t => t.Tags).Include(c => c.Category)
-                .Where(p => p.PostId == postView.PostId).First();
+            Post post = await db.Posts.Include(t => t.Tags).Include(c => c.Category)
+                .Where(p => p.PostId == postView.PostId).FirstAsync();
 
             post.Title = postView.Title;
             post.ShortDescription = postView.ShortDescription;
@@ -178,27 +178,72 @@ namespace CollaborativeBlog.Controllers
             return RedirectToAction("AddPostImage", new { id = post.PostId });
         }
 
-        public IActionResult PostDetails(int postId)
+        public async Task<IActionResult> PostDetails(int postId)
         {
-            Post post =  db.Posts.Where(p => p.PostId == postId).Include(i => i.Images)
-                .Include(t => t.Tags).Include(c=>c.Category).First();
+            Post post =  await db.Posts.Where(p => p.PostId == postId).Include(i => i.Images)
+                .Include(t => t.Tags).Include(c=>c.Category).FirstAsync();
 
-            int countLike = db.Posts.Where(p => p.PostId == postId).Include(l => l.Likes).Select(p => p.Likes.Count()).First();
+            int countLike = await db.Posts.Where(p => p.PostId == postId).Include(l => l.Likes).
+                Select(p => p.Likes.Count()).FirstAsync();
+
+            string userId = _userManager.GetUserId(User);
+            int userRating = 0;
+
+            if (await db.Ratings.AnyAsync(r => r.UserId == userId && r.PostId == postId))
+            {
+          
+                userRating = await db.Ratings.Select(r => r.RatingNumber).FirstAsync();
+            }
+
+            ViewBag.UserRating = userRating;  
             ViewBag.CountLike = countLike;
 
             return View(post);
         }
 
+     
+        [HttpPost]
+        public async Task<JsonResult> Rate(int postId, int ratingNumber)
+        {
+            Post post = await db.Posts.Where(p => p.PostId == postId).FirstAsync();
+            string userId = _userManager.GetUserId(User);
+            User user = await _userManager.FindByNameAsync(User.Identity.Name);
+                        
+            if (await db.Ratings.AnyAsync(p => p.PostId == postId && p.UserId == userId))
+            {
+                Rating rating = await db.Ratings.Where(p => p.PostId == postId && p.UserId == userId).FirstAsync();
+                rating.RatingNumber = ratingNumber;
+                db.Ratings.Update(rating);
+            }
+            else
+            {
+                Rating rating = new Rating
+                {
+                    RatingNumber = ratingNumber,
+                    PostId = postId,
+                    Post = post,
+                    UserId = userId,
+                    User = user
+                };
+                await db.Ratings.AddAsync(rating);
+            }
+            post.UserRating = await db.Ratings.Where(p => p.PostId == postId).AverageAsync(a => a.RatingNumber);
+            await db.SaveChangesAsync();
+
+            string name = ratingNumber.ToString();
+            return Json(new { Status = "success", Name = name });
+        }
+
 
         public async Task<IActionResult> Like(int postId)
         {
-            Post post =  db.Posts.Where(p => p.PostId == postId).First();
+            Post post = await db.Posts.Where(p => p.PostId == postId).FirstAsync();
             string userId =  _userManager.GetUserId(User);
             User user = await _userManager.FindByNameAsync(User.Identity.Name);
   
-            if (db.Likes.Any(p => p.PostId == postId && p.UserId == userId))
+            if (await db.Likes.AnyAsync(p => p.PostId == postId && p.UserId == userId))
             {
-                Like likedPost = db.Likes.Where(p => p.PostId == postId && p.UserId == userId).First();
+                Like likedPost = await db.Likes.Where(p => p.PostId == postId && p.UserId == userId).FirstAsync();
                 db.Likes.Remove(likedPost);
             }
             else
