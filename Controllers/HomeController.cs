@@ -2,8 +2,10 @@
 using CollaborativeBlog.Services;
 using CollaborativeBlog.ViewModels;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,45 +17,50 @@ namespace CollaborativeBlog.Controllers
     public class HomeController : Controller
     {
         private readonly ApplicationContext db;
+        private readonly IStringLocalizer _localizer;
 
-        public HomeController(ApplicationContext db)
+        public HomeController(ApplicationContext db, IStringLocalizer localizer)
         {
             this.db = db;
+            _localizer = localizer;
         }
 
-        public IActionResult Test()
-        {
-            return View();
-        }
-        public async Task<IActionResult> Index(string? tag)
+        public async Task<IActionResult> Index()
         {
             IEnumerable<Post> posts = await db.Posts.Include(i => i.Images).Include(t => t.Tags)
                 .Include(c => c.Category).ToListAsync();
 
-            var tags = posts.SelectMany(t => t.Tags.Select(n => n.TagName));
+            var tags = await db.Tags.Select(t => t.TagName).ToListAsync();
             IEnumerable<Post> highlyRaitedPosts = posts.Where(r => r.Rating > 7);
-
-            IEnumerable<Post> postWithTags;
-            if (!string.IsNullOrEmpty(tag))
-            {
-                postWithTags = posts.Where(p => p.Tags.All(t => t.TagName == tag)).ToList();
-            }
-            else
-            {
-               postWithTags = posts;
-            }
-      
 
             var postModel = new HomePostViewModel
             {
                 AllPosts = posts,
                 AllTags = tags,
                 HighlyRatedPublications = highlyRaitedPosts,
-                PostsWithTags = postWithTags
             };
 
             return View(postModel);
         }
 
+        public async Task<IActionResult> Galery(string tag) 
+        {
+            IEnumerable<Post> posts = await db.Posts.Include(i => i.Images).Include(t => t.Tags)
+                .Include(c => c.Category).Where(p => p.Tags.Any(t => t.TagName == tag)).ToListAsync();
+
+            return View(posts);
+        }
+
+        [HttpPost]
+        public IActionResult SetLanguage(string culture, string returnUrl)
+        {
+            Response.Cookies.Append(
+                CookieRequestCultureProvider.DefaultCookieName,
+                CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
+                new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) }
+            );
+
+            return LocalRedirect(returnUrl);
+        }
     }
 }

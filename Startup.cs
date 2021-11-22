@@ -6,12 +6,15 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -33,9 +36,11 @@ namespace CollaborativeBlog
 
             services.AddDbContext<ApplicationContext>(options =>
                 options.UseSqlServer(connection)).AddIdentity<User, IdentityRole>()
-              .AddEntityFrameworkStores<ApplicationContext>(); ;
+              .AddEntityFrameworkStores<ApplicationContext>();
 
-        
+            services.AddTransient<IStringLocalizer, EFStringLocalizer>();
+            services.AddSingleton<IStringLocalizerFactory>(new EFStringLocalizerFactory(connection));
+
             services.AddAuthentication().AddFacebook(config =>
             {
                 config.AppId = Configuration["Authentication:Facebook:AppId"];
@@ -53,7 +58,7 @@ namespace CollaborativeBlog
             services.ConfigureApplicationCookie(config =>
             {
                 config.LoginPath = "/Account/Login";
-          //      config.AccessDeniedPath = "/Account/Login";
+              //  config.AccessDeniedPath = "/Home/Index";
             });
 
             services.AddAuthorization(options =>
@@ -76,8 +81,25 @@ namespace CollaborativeBlog
             services.AddSingleton(x => new BlobServiceClient(blobConnection));
             services.AddSingleton<IBlobService, BlobService>();
 
-          
-            services.AddControllersWithViews(options => { options.SuppressAsyncSuffixInActionNames = false; });
+            services.AddControllersWithViews(options => { options.SuppressAsyncSuffixInActionNames = false; })
+                .AddDataAnnotationsLocalization(options => {
+                    options.DataAnnotationLocalizerProvider = (type, factory) =>
+                    factory.Create(null);
+                }).AddViewLocalization();
+
+
+            services.Configure<RequestLocalizationOptions>(options =>
+            {
+                var supportedCultures = new[]
+                {
+                    new CultureInfo("en"),
+                    new CultureInfo("ru")
+                };
+
+                options.DefaultRequestCulture = new RequestCulture("ru");
+                options.SupportedCultures = supportedCultures;
+                options.SupportedUICultures = supportedCultures;
+            });
 
 
         }
@@ -94,6 +116,8 @@ namespace CollaborativeBlog
                 app.UseHsts();
             }
 
+
+            app.UseRequestLocalization();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 

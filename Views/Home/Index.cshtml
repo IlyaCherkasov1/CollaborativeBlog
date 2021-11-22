@@ -2,42 +2,21 @@
 <link rel="stylesheet" href="~/lib/bootstrap/dist/css/owl.theme.default.min.css" />
 
 
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
+<h1>@Localizer["Header"]</h1>
+<h3>@Localizer["Message"]</h3>
+
 <div class="container">
-    <a>Публикации по тэгам:</a>
+    <h4><a>Последнии публикации:</a></h4>
     <p>Обновляется после каждой добавленной записи</p>
 
     <div class="owl-two owl-carousel owl-theme">
-        @foreach (var post in Model.PostsWithTags)
-        {
-            <div class="ms-2 me-2">
-                <div class="card">
-                    <img src="@post.Images[0].ImageUri" class="card-img-top " />
-                    <div class="card-body">
-                        <h5 class="card-title text-truncate">
-                            <a asp-controller="Post" asp-action="PostDetails" asp-route-postId="@post.PostId">
-                                @post.Title
-                            </a>
-                        </h5>
-                        <p> @post.Category.CategoryName</p>
-                        <p> Raiting: @post.UserRating</p>
-
-                    </div>
-                </div>
-            </div>
-        }
-    </div>
-</div>
-
-<br />
-
-<div class="container">
-    <a>Недавно опубликованные:</a>
-    <p>Обновляется после каждой добавленной записи</p>
-
-    <div class="owl-two owl-carousel owl-theme">
-
         @foreach (var post in Model.AllPosts)
         {
+
             <div class="ms-2 me-2">
                 <div class="card">
                     <img src="@post.Images[0].ImageUri" class="card-img-top " />
@@ -94,7 +73,7 @@
             <div class="ms-2 me-2">
                 <div>
                     <div>
-                        <a asp-controller="Home" asp-action="Index" asp-route-tag="@tag">#@tag </a>
+                        <a asp-action="Galery" asp-route-tag="@tag">#@tag </a>
                     </div>
                 </div>
             </div>
