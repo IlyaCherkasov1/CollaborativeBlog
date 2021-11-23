@@ -53,10 +53,10 @@ namespace CollaborativeBlog.Controllers
             }
 
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, false, false);
-            if (result.Succeeded)
-            {
-                return Redirect("/Home/Index");
-            }
+            //if (result.Succeeded)
+            //{
+            //    return Redirect("/Home/Index");
+            //}
 
             return RedirectToAction("RegisterExternalConfirmed", new ExternalLoginViewModel
             {
@@ -75,17 +75,17 @@ namespace CollaborativeBlog.Controllers
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
-                return Redirect("/Home/Index");
-
+                return RedirectToAction("Login");
             }
 
-            var user = new User(model.NameIdentifier, model.Email);
+            var user = new User(model.NameIdentifier, model.Email, model.GivenName);
             var result = await _userManager.CreateAsync(user);
 
 
             if (result.Succeeded)
             {
-                    var identityResult = await _userManager.AddLoginAsync(user, info);
+                await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.GivenName, model.GivenName));
+                var identityResult = await _userManager.AddLoginAsync(user, info);
                     if (identityResult.Succeeded)
                     {
                         await _signInManager.SignInAsync(user, false);

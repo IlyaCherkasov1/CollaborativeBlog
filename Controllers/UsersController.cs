@@ -31,5 +31,16 @@ namespace CollaborativeBlog.Controllers
            List<Post> posts = await db.Posts.Where(u => u.UserId == id).ToListAsync();
            return View(posts);
         }
+
+        [HttpPost]
+        public async Task<ActionResult> Delete(string id)
+        {
+            User user = await _userManager.FindByIdAsync(id);
+            if (user != null)
+            {
+                IdentityResult result = await _userManager.DeleteAsync(user);
+            }
+            return RedirectToAction("Index");
+        }
     }
 }

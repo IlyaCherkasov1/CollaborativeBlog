@@ -22,6 +22,8 @@ namespace CollaborativeBlog.Models
         public DbSet<Rating> Ratings { get; set; }
         public DbSet<Culture> Cultures { get; set; }
         public DbSet<Resource> Resources { get; set; }
+        public DbSet<Comment> Comments { get; set; }
+
 
     }
 }

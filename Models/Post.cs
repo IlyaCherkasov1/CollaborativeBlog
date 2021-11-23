@@ -22,5 +22,6 @@ namespace CollaborativeBlog.Models
         public List<Tag> Tags { get; set; }
         public List<Like> Likes { get; set; }
         public List<Rating> Ratings { get; set; }
+        public List<Comment> Comments { get; set; }
     }
 }

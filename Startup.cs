@@ -1,5 +1,6 @@
 
 using Azure.Storage.Blobs;
+using CollaborativeBlog.Hubs;
 using CollaborativeBlog.Models;
 using CollaborativeBlog.Services;
 using Microsoft.AspNetCore.Builder;
@@ -17,6 +18,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace CollaborativeBlog
@@ -32,6 +34,8 @@ namespace CollaborativeBlog
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSignalR(options => { options.EnableDetailedErrors = true;});
+
             string connection = Configuration.GetConnectionString("DefaultConnection");
 
             services.AddDbContext<ApplicationContext>(options =>
@@ -76,17 +80,18 @@ namespace CollaborativeBlog
 
             });
 
-
             var blobConnection = Configuration.GetValue<string>("BlobConnection");
             services.AddSingleton(x => new BlobServiceClient(blobConnection));
             services.AddSingleton<IBlobService, BlobService>();
 
             services.AddControllersWithViews(options => { options.SuppressAsyncSuffixInActionNames = false; })
-                .AddDataAnnotationsLocalization(options => {
+                .AddDataAnnotationsLocalization(options =>
+                {
                     options.DataAnnotationLocalizerProvider = (type, factory) =>
                     factory.Create(null);
                 }).AddViewLocalization();
-
+                 
+                
 
             services.Configure<RequestLocalizationOptions>(options =>
             {
@@ -131,6 +136,7 @@ namespace CollaborativeBlog
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapHub<ChatHub>("/chat");
             });
         }
     }
