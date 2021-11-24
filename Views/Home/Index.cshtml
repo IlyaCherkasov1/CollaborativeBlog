@@ -1,6 +1,18 @@
 ﻿<link rel="stylesheet" href="~/lib/bootstrap/dist/css/owl.carousel.min.css" />
 <link rel="stylesheet" href="~/lib/bootstrap/dist/css/owl.theme.default.min.css" />
 
+@model PostIndexViewModel
+
+<form method="post">
+    <div class="row form-group">
+        <div class="col-md-7">
+            <input asp-for="@Model.Text" class="form-control" id="TextSearchIput" type="text" placeholder="Enter search term..." aria-label="Enter search term..." aria-describedby="button-search">
+        </div>
+        <div class="col-md-5">
+            <button class="btn btn-primary" id="ApplyTextSearchButton" type="button">Go!</button>
+        </div>
+    </div>
+</form>
 
 @using Microsoft.AspNetCore.Mvc.Localization
 
@@ -14,7 +26,7 @@
     <p>Обновляется после каждой добавленной записи</p>
 
     <div class="owl-two owl-carousel owl-theme">
-        @foreach (var post in Model.AllPosts)
+        @foreach (var post in Model.Posts)
         {
 
             <div class="ms-2 me-2">
@@ -24,6 +36,7 @@
                         <h5 class="card-title text-truncate">
                             <a asp-controller="Post" asp-action="PostDetails" asp-route-postId="@post.PostId">
                                 @post.Title
+                                <eq-highlight-text text="@Model.Text" value="@post.Title"></eq-highlight-text>
                             </a>
                         </h5>
                         @post.Category.CategoryName
@@ -42,24 +55,7 @@
     <p>Обновляется после каждой добавленной записи</p>
 
     <div class="owl-three owl-carousel owl-theme">
-
-        @foreach (var post in Model.HighlyRatedPublications)
-        {
-            <div class="ms-2 me-2">
-                <div class="card">
-                    <img src="@post.Images[0].ImageUri" class="card-img-top " />
-                    <div class="card-body">
-                        <h5 class="card-title text-truncate">
-                            <a asp-controller="Post" asp-action="PostDetails" asp-route-postId="@post.PostId">
-                                @post.Title
-                            </a>
-                        </h5>
-                        @post.Category.CategoryName
-                        <p> Raiting: @post.UserRating</p>
-                    </div>
-                </div>
-            </div>
-        }
+        @await Component.InvokeAsync("HighlyRaitedPosts");
     </div>
 </div>
 
@@ -68,16 +64,7 @@
 
 <div class="container">
     <div>
-        @foreach (var tag in Model.AllTags)
-        {
-            <div class="ms-2 me-2">
-                <div>
-                    <div>
-                        <a asp-action="Galery" asp-route-tag="@tag">#@tag </a>
-                    </div>
-                </div>
-            </div>
-        }
+        @await Component.InvokeAsync("TagsName");
     </div>
 </div>
 

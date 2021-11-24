@@ -1,0 +1,17 @@
+﻿@foreach (var post in Model)
+{
+    <div class="ms-2 me-2">
+        <div class="card">
+            <img src="@post.Images[0].ImageUri" class="card-img-top " />
+            <div class="card-body">
+                <h5 class="card-title text-truncate">
+                    <a asp-controller="Post" asp-action="PostDetails" asp-route-postId="@post.PostId">
+                        @post.Title
+                    </a>
+                </h5>
+                @post.Category.CategoryName
+                <p> Raiting: @post.UserRating</p>
+            </div>
+        </div>
+    </div>
+}

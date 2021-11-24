@@ -1,0 +1,10 @@
+﻿@foreach (var tag in Model)
+{
+    <div class="ms-2 me-2">
+        <div>
+            <div>
+                <a asp-action="Galery" asp-route-tag="@tag">#@tag </a>
+            </div>
+        </div>
+    </div>
+}

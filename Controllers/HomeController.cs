@@ -1,6 +1,8 @@
 ﻿using CollaborativeBlog.Models;
 using CollaborativeBlog.Services;
 using CollaborativeBlog.ViewModels;
+using Korzh.EasyQuery.Linq;
+using Korzh.EasyQuery.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,32 +18,46 @@ namespace CollaborativeBlog.Controllers
 {
     public class HomeController : Controller
     {
+
         private readonly ApplicationContext db;
         private readonly IStringLocalizer _localizer;
 
-        public HomeController(ApplicationContext db, IStringLocalizer localizer)
+        public HomeController(ApplicationContext db, IStringLocalizer localizer, IServiceProvider services)
         {
             this.db = db;
             _localizer = localizer;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
-            IEnumerable<Post> posts = await db.Posts.Include(i => i.Images).Include(t => t.Tags)
-                .Include(c => c.Category).ToListAsync();
-
-            var tags = await db.Tags.Select(t => t.TagName).ToListAsync();
-            IEnumerable<Post> highlyRaitedPosts = posts.Where(r => r.Rating > 7);
-
-            var postModel = new HomePostViewModel
+            var model = new PostIndexViewModel
             {
-                AllPosts = posts,
-                AllTags = tags,
-                HighlyRatedPublications = highlyRaitedPosts,
+                Posts = await db.Posts.Include(i => i.Images).Include(t => t.Tags)
+                .Include(c => c.Category).ToListAsync()
             };
-
-            return View(postModel);
+            
+            return View(model);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Index(PostIndexViewModel model)
+        {
+            if (!string.IsNullOrEmpty(model.Text))
+            {
+                model.Posts = await db.Posts.FullTextSearchQuery(model.Text)
+                    .Include(i => i.Images).Include(t => t.Tags).Include(c => c.Category).Include(c => c.Comments).
+                    ToListAsync();
+            }
+            else
+            {
+                model.Posts = await db.Posts.
+                    Include(i => i.Images).Include(t => t.Tags).Include(c => c.Category).ToListAsync();
+            }
+            return View("Galery",model.Posts);
+        }
+
+
 
         public async Task<IActionResult> Galery(string tag) 
         {

@@ -56,7 +56,7 @@ namespace CollaborativeBlog.Controllers
       [Authorize(Roles ="Admin")]
 
         [HttpPost]
-        public async Task<IActionResult> AddPost(PostViewModels postView)
+        public async Task<IActionResult> AddPost(PostCreateViewModels postView)
         {
             Post post = new Post
             {
@@ -159,7 +159,7 @@ namespace CollaborativeBlog.Controllers
 
         [Authorize(Roles ="Admin")]
         [HttpPost]
-        public async Task<IActionResult> EditPost(PostViewModels postView)
+        public async Task<IActionResult> EditPost(PostCreateViewModels postView)
         {
             Post post = await db.Posts.Include(t => t.Tags).Include(c => c.Category)
                 .Where(p => p.PostId == postView.PostId).FirstAsync();

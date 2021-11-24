@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CollaborativeBlog.ViewModels
 {
-    public class PostViewModels
+    public class PostCreateViewModels
     {
         public int PostId { get; set; }
         public string Title { get; set; }
