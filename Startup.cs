@@ -5,6 +5,7 @@ using CollaborativeBlog.Models;
 using CollaborativeBlog.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
@@ -18,6 +19,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Principal;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
@@ -25,12 +27,14 @@ namespace CollaborativeBlog
 {
     public class Startup
     {
+   
+        public IConfiguration Configuration { get; }
+
         public Startup(IConfiguration configuration)
-        {
+        {    
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -102,10 +106,12 @@ namespace CollaborativeBlog
                     new CultureInfo("en"),
                     new CultureInfo("ru")
                 };
-
+             
+              
                 options.DefaultRequestCulture = new RequestCulture("ru");
                 options.SupportedCultures = supportedCultures;
                 options.SupportedUICultures = supportedCultures;
+
             });
 
 
@@ -113,6 +119,7 @@ namespace CollaborativeBlog
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+                
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -123,6 +130,7 @@ namespace CollaborativeBlog
                 app.UseHsts();
             }
 
+            app.UseAuthentication();
 
             app.UseRequestLocalization();
             app.UseHttpsRedirection();
@@ -130,7 +138,6 @@ namespace CollaborativeBlog
 
             app.UseRouting();
 
-            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

@@ -23,7 +23,8 @@ function showrating() {
         contentType: false
     }).done(function (response) {
         if (response.status === "success") {
-            $("#myRating").html(response.name);
+            $("#myRating").html("My rate: " + response.name);
+            $("#avverageUserRate").html(response.avverageRate);
         }
 
         //var countStar = response.name;

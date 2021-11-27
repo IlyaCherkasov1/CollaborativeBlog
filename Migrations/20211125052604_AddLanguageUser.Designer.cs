@@ -4,14 +4,16 @@ using CollaborativeBlog.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CollaborativeBlog.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20211125052604_AddLanguageUser")]
+    partial class AddLanguageUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -169,8 +171,8 @@ namespace CollaborativeBlog.Migrations
                     b.Property<int>("PostId")
                         .HasColumnType("int");
 
-                    b.Property<double>("RatingNumber")
-                        .HasColumnType("float");
+                    b.Property<int>("RatingNumber")
+                        .HasColumnType("int");
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
@@ -243,9 +245,6 @@ namespace CollaborativeBlog.Migrations
 
                     b.Property<string>("GivenName")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDarkTheme")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Language")
                         .HasColumnType("nvarchar(max)");

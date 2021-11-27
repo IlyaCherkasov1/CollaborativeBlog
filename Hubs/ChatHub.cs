@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CollaborativeBlog.Hubs
-{
+{   
     public class ChatHub : Hub
     {
         private readonly ApplicationContext db;
@@ -28,7 +28,7 @@ namespace CollaborativeBlog.Hubs
         public async Task Send(int postId, string message)
         {
             Post post = await db.Posts.Where(p => p.PostId == postId).FirstAsync();
-            string userId = _userManager.GetUserId(Context.User);
+            string userId = Context.UserIdentifier;
             User user = await _userManager.FindByNameAsync(Context.User.Identity.Name);
 
             Comment comment = new Comment
@@ -47,21 +47,22 @@ namespace CollaborativeBlog.Hubs
             await Clients.All.SendAsync("Send", comment.Text, user.GivenName, comment.Date.ToShortDateString());
         }
 
-
-        public override async Task OnConnectedAsync()
+        public async Task LoadMessage(int postId)
         {
-            var comments = await db.Comments
-                .Select(x => new CommentsViewModel() {
-                    Text = x.Text, UserName = x.User.GivenName,Date = x.Date
-                }).ToListAsync();
+            
+            Post post = await db.Posts.FindAsync(postId);
+            var comments = await db.Comments.Where(p => p.Post == post )
+             .Select(x => new CommentsViewModel()
+             {
+                 Text = x.Text,
+                 UserName = x.User.GivenName,
+                 Date = x.Date
+             }).ToListAsync();
 
             if (comments.Count != 0)
             {
-                await Clients.All.SendAsync("ConnectedMessages", comments);
+                await Clients.User(Context.UserIdentifier).SendAsync("LoadMessage", comments);
             }
-     
-            await base.OnConnectedAsync();
-        
         }
     }
 }

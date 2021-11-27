@@ -1,19 +1,21 @@
 ﻿const hubConnection = new signalR.HubConnectionBuilder()
     .withUrl("/chat")
     .build();
+var postId = +$('input[name="PostId"]').val();
 
 hubConnection.on("Send", sendFunc);
 
-hubConnection.on("ConnectedMessages", function (comments) {
+hubConnection.on("LoadMessage", function (comments) {
+   
     for (let i = 0, l = comments.length; i < l; i++) {
         sendFunc(comments[i].text, comments[i].userName, comments[i].date);
     }
 });
 
+
 const btns = document.querySelectorAll('button[id^=but]')
 btns.forEach(btn => {
     btn.addEventListener('click', event => {
-        var postId = +$('input[name="PostId"]').val();
         var message = $('textarea#messageZone').val();
         hubConnection.invoke("Send", postId, message);
     });
@@ -21,6 +23,7 @@ btns.forEach(btn => {
 
 function sendFunc(message, userName, date) {
 
+ 
     let elem = document.createElement("p");
     elem.appendChild(document.createTextNode(message));
 
@@ -47,9 +50,26 @@ function sendFunc(message, userName, date) {
     div3.appendChild(div4);
     div3.appendChild(elem);
 
-    let firstElem = document.getElementById("chatroom").firstChild;
-    document.getElementById("chatroom").insertBefore(div1, firstElem);
+    let chatRoomDiv = document.getElementById("chatroom");
+    let firstElem = chatRoomDiv.firstChild;
+
+    if (firstElem !== null) {
+        let lastElem = chatRoomDiv.lastChild;
+        chatRoomDiv.insertBefore(div1, lastElem.nextSibling);
+    }
+    else {
+        chatRoomDiv.insertBefore(div1, firstElem);
+    }
 }
 
+function insertAfter(newNode, referenceNode) {
+    referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+}
 
-hubConnection.start();
+hubConnection.start().then(function () {
+  
+    hubConnection.invoke("LoadMessage", postId);
+}).catch(function (err) {
+    return console.error(err.toString());
+});
+

@@ -11,7 +11,7 @@
 else
 {
     <h1> Auntification: </h1>
-    <form asp-controller="Account" asp-action="ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl">
+    <form asp-controller="Account" asp-action="ExternalLogin"  asp-route-returnUrl="@Model.ReturnUrl">
         @foreach (var provider in Model.ExternalProviders)
         {
             <button type="submit" name="provider" class="btn btn-outline-info" value="@provider.Name">

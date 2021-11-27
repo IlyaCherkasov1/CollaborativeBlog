@@ -1,72 +1,57 @@
-﻿<link rel="stylesheet" href="~/lib/bootstrap/dist/css/owl.carousel.min.css" />
-<link rel="stylesheet" href="~/lib/bootstrap/dist/css/owl.theme.default.min.css" />
+﻿<link href="~/css/owl.carousel.min.css" rel="stylesheet" />
+<link href="~/css/owl.theme.default.min.css" rel="stylesheet" />
 
-@model PostIndexViewModel
+@model PostViewModel
 
-<form method="post">
-    <div class="row form-group">
-        <div class="col-md-7">
-            <input asp-for="@Model.Text" class="form-control" id="TextSearchIput" type="text" placeholder="Enter search term..." aria-label="Enter search term..." aria-describedby="button-search">
-        </div>
-        <div class="col-md-5">
-            <button class="btn btn-primary" id="ApplyTextSearchButton" type="button">Go!</button>
-        </div>
-    </div>
-</form>
+    <div class="container">
 
-@using Microsoft.AspNetCore.Mvc.Localization
+        <h4><a asp-action="LastPublication">Последнии публикации:</a></h4>
+        <p>Обновляется после каждой добавленной записи</p>
+        <div class="owl-one owl-carousel owl-theme">
+            @foreach (var post in Model.Posts)
+            {
 
-@inject IViewLocalizer Localizer
-
-<h1>@Localizer["Header"]</h1>
-<h3>@Localizer["Message"]</h3>
-
-<div class="container">
-    <h4><a>Последнии публикации:</a></h4>
-    <p>Обновляется после каждой добавленной записи</p>
-
-    <div class="owl-two owl-carousel owl-theme">
-        @foreach (var post in Model.Posts)
-        {
-
-            <div class="ms-2 me-2">
-                <div class="card">
-                    <img src="@post.Images[0].ImageUri" class="card-img-top " />
-                    <div class="card-body">
-                        <h5 class="card-title text-truncate">
-                            <a asp-controller="Post" asp-action="PostDetails" asp-route-postId="@post.PostId">
-                                @post.Title
-                                <eq-highlight-text text="@Model.Text" value="@post.Title"></eq-highlight-text>
-                            </a>
-                        </h5>
-                        @post.Category.CategoryName
-                        <p> Raiting: @post.UserRating</p>
+                <div class="ms-2 me-2">
+                    <div class="card">
+                        <img src="@post.Images[0].ImageUri" class="card-img-top " />
+                        <div class="card-body">
+                            <h5 class="card-title text-truncate">
+                                <a asp-controller="Post" asp-action="PostDetails" asp-route-postId="@post.PostId">
+                                    @post.Title
+                                    <eq-highlight-text text="@Model.Text" value="@post.Title"></eq-highlight-text>
+                                </a>
+                            </h5>
+                            @post.Category.CategoryName
+                            <p> Рейтинг: @post.UserRating</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-        }
+            }
+        </div>
     </div>
-</div>
 
-<br />
 
-<div class="container">
-    <a>Публикации с самым высоким рэйтингом:</a>
-    <p>Обновляется после каждой добавленной записи</p>
+    <br />
 
-    <div class="owl-three owl-carousel owl-theme">
-        @await Component.InvokeAsync("HighlyRaitedPosts");
+    <div class="container">
+        <h4>
+            <a asp-action="HighlyRaitedPosts">Публикации с самым высоким рэйтингом:</a>
+        </h4>
+        <p>Обновляется после каждой добавленной записи</p>
+
+        <div class="owl-two owl-carousel owl-theme">
+            @await Component.InvokeAsync("HighlyRaitedPosts");
+        </div>
     </div>
-</div>
 
+    <br />
 
-<br />
-
-<div class="container">
-    <div>
-        @await Component.InvokeAsync("TagsName");
+    <div class="container">
+        <div >
+            @await Component.InvokeAsync("TagsName");
+        </div>
     </div>
-</div>
 
-<script src="~/js/carousel.js"></script>
-<script src="~/lib/bootstrap/dist/js/owl.carousel.min.js"></script>
+    <script src="~/js/carousel.js"></script>
+    <script src="~/js/owl.carousel.min.js"></script>
+

@@ -4,7 +4,6 @@ using CollaborativeBlog.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -40,7 +39,6 @@ namespace CollaborativeBlog.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-
         public IActionResult AddPost()
         {
             ViewBag.CategoryId = new SelectList(db.Categories, "CategoryId", "CategoryName");
@@ -53,8 +51,7 @@ namespace CollaborativeBlog.Controllers
             return View(addpostviewmodel);
         }
 
-      [Authorize(Roles ="Admin")]
-
+         [Authorize(Roles ="Admin")]
         [HttpPost]
         public async Task<IActionResult> AddPost(PostCreateViewModels postView)
         {
@@ -183,27 +180,17 @@ namespace CollaborativeBlog.Controllers
             Post post =  await db.Posts.Where(p => p.PostId == postId).Include(i => i.Images)
                 .Include(t => t.Tags).Include(c=>c.Category).FirstAsync();
 
+
             int countLike = await db.Posts.Where(p => p.PostId == postId).Include(l => l.Likes).
-                Select(p => p.Likes.Count()).FirstAsync();
+             Select(p => p.Likes.Count()).FirstAsync();
 
-            string userId = _userManager.GetUserId(User);
-            int userRating = 0;
-
-            if (await db.Ratings.AnyAsync(r => r.UserId == userId && r.PostId == postId))
-            {
-          
-                userRating = await db.Ratings.Select(r => r.RatingNumber).FirstAsync();
-            }
-
-            ViewBag.UserRating = userRating;  
             ViewBag.CountLike = countLike;
-
             return View(post);
         }
 
      
         [HttpPost]
-        public async Task<JsonResult> Rate(int postId, int ratingNumber)
+        public async Task<JsonResult> Rate(int postId, double ratingNumber)
         {
             Post post = await db.Posts.Where(p => p.PostId == postId).FirstAsync();
             string userId = _userManager.GetUserId(User);
@@ -225,17 +212,20 @@ namespace CollaborativeBlog.Controllers
                     UserId = userId,
                     User = user
                 };
-                await db.Ratings.AddAsync(rating);
+                 await db.Ratings.AddAsync(rating);
             }
-            post.UserRating = await db.Ratings.Where(p => p.PostId == postId).AverageAsync(a => a.RatingNumber);
+            await db.SaveChangesAsync();
+            double rate = await db.Ratings.Where(p => p.PostId == postId).AverageAsync(p => p.RatingNumber);
+            rate = Math.Round(rate, 1);
+            post.UserRating = rate;
+
             await db.SaveChangesAsync();
 
-            string name = ratingNumber.ToString();
-            return Json(new { Status = "success", Name = name });
+            return Json(new { Status = "success", Name = ratingNumber, AvverageRate = rate });
         }
 
-
-        public async Task<IActionResult> Like(int postId)
+        [HttpPost]
+        public async Task<JsonResult> Like(int postId)
         {
             Post post = await db.Posts.Where(p => p.PostId == postId).FirstAsync();
             string userId =  _userManager.GetUserId(User);
@@ -259,7 +249,11 @@ namespace CollaborativeBlog.Controllers
                 await db.Likes.AddAsync(like);
             }
             await db.SaveChangesAsync();
-            return RedirectToAction("PostDetails",new { postId = post.PostId });
+
+            int countLike = await db.Posts.Where(p => p.PostId == postId).Include(l => l.Likes).
+             Select(p => p.Likes.Count()).FirstAsync();
+
+            return Json(new { Status = "success", PostLikes = countLike });
         }
     }
 }

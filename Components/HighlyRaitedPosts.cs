@@ -20,8 +20,8 @@ namespace CollaborativeBlog.Components
 
         public IViewComponentResult Invoke()
         {
-            var highlyRaitedPosts =   db.Posts.Include(i => i.Images).Include(t => t.Tags)
-                .Include(c => c.Category).Where(r => r.Rating > 7).ToList();
+            var highlyRaitedPosts =  db.Posts.OrderByDescending(u => u.UserRating).Include(i => i.Images).Include(t => t.Tags)
+                .Include(c => c.Category).ToList();
             return View(highlyRaitedPosts);
         }
     }

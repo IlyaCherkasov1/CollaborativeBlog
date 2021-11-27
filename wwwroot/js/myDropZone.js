@@ -7,7 +7,7 @@ Dropzone.options.uploader = {
     autoProcessQueue: false,
     uploadMultiple: true,
     parallelUploads: 3,
-    maxFiles: 3,
+    maxFiles: 100,
     maxFilesize: 5,
     acceptedFiles: 'image/*',
     addRemoveLinks: true,

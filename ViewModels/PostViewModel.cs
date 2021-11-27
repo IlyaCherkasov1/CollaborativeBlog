@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CollaborativeBlog.ViewModels
 {
-    public class PostIndexViewModel
+    public class PostViewModel
     {
         public IEnumerable<Post> Posts { get; set; }
         public string Text { get; set; }

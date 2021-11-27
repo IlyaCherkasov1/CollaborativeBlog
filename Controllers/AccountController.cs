@@ -26,11 +26,12 @@ namespace CollaborativeBlog.Controllers
         }
 
         [AllowAnonymous]
-        public async Task<IActionResult> Login()
+        public async Task<IActionResult> Login(string returnUrl)
         {
             var externalProviders = await _signInManager.GetExternalAuthenticationSchemesAsync();
             return View(new LoginViewModel
             {
+                ReturnUrl = returnUrl,
                 ExternalProviders = externalProviders
             });
         } 
@@ -53,10 +54,13 @@ namespace CollaborativeBlog.Controllers
             }
 
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, false, false);
-            //if (result.Succeeded)
-            //{
-            //    return Redirect("/Home/Index");
-            //}
+          
+            if (result.Succeeded)
+            {
+                string name = info.Principal.FindFirstValue(ClaimTypes.NameIdentifier);
+                User user = await _userManager.FindByNameAsync(name);  
+                return RedirectToAction("SetLanguage", "Users", new { culture = user.Language, returnUrl = returnUrl });
+            }
 
             return RedirectToAction("RegisterExternalConfirmed", new ExternalLoginViewModel
             {
@@ -90,8 +94,7 @@ namespace CollaborativeBlog.Controllers
                     {
                         await _signInManager.SignInAsync(user, false);
                         return Redirect("/Home/Index");
-                    }
-                
+                    }         
             }
 
             return View(model);
