@@ -20,29 +20,27 @@ namespace CollaborativeBlog.Controllers
         private readonly ApplicationContext db;
 
         private readonly UserManager<User> _userManager;
-   
-
 
         public UsersController(UserManager<User> userManager, ApplicationContext db, IStringLocalizer localizer)
         {
             _userManager = userManager;
             this.db = db;
-         
+
         }
 
         [Authorize(Roles = "Admin")]
 
         public async Task<IActionResult> Index() => View(await _userManager.Users.ToListAsync());
 
-    [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> PostsList(string id)
         {
-           List<Post> posts = await db.Posts.Where(u => u.UserId == id).ToListAsync();
-           return View(posts);
+            List<Post> posts = await db.Posts.Where(u => u.UserId == id).ToListAsync();
+            return View(posts);
         }
 
         [HttpPost]
-    [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> Delete(string id)
         {
             User user = await _userManager.FindByIdAsync(id);
@@ -63,7 +61,6 @@ namespace CollaborativeBlog.Controllers
             return Json(new { Status = "success", IsDark = user.IsDarkTheme });
         }
 
-
         [Authorize]
         [HttpPost]
         public async Task<JsonResult> ThemeSwitch(string userName)
@@ -71,7 +68,7 @@ namespace CollaborativeBlog.Controllers
             User user = await _userManager.FindByNameAsync(userName);
             user.IsDarkTheme = !user.IsDarkTheme;
             await db.SaveChangesAsync();
-            
+
             return Json(new { Status = "success", IsDark = user.IsDarkTheme });
         }
 
@@ -87,6 +84,8 @@ namespace CollaborativeBlog.Controllers
             User user = await _userManager.FindByNameAsync(User.Identity.Name);
             user.Language = culture;
             await db.SaveChangesAsync();
+
+       
 
             return LocalRedirect(returnUrl);
         }

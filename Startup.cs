@@ -53,8 +53,6 @@ namespace CollaborativeBlog
             {
                 config.AppId = Configuration["Authentication:Facebook:AppId"];
                 config.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
-    
-
             })
             .AddGoogle(config =>
             {
@@ -88,8 +86,6 @@ namespace CollaborativeBlog
             services.AddSingleton(x => new BlobServiceClient(blobConnection));
             services.AddSingleton<IBlobService, BlobService>();
 
-
-
             services.AddControllersWithViews(options => { options.SuppressAsyncSuffixInActionNames = false; })
                 .AddDataAnnotationsLocalization(options =>
                 {
@@ -97,8 +93,6 @@ namespace CollaborativeBlog
                     factory.Create(null);
                 }).AddViewLocalization();
                  
-                
-
             services.Configure<RequestLocalizationOptions>(options =>
             {
                 var supportedCultures = new[]
@@ -111,15 +105,11 @@ namespace CollaborativeBlog
                 options.DefaultRequestCulture = new RequestCulture("ru");
                 options.SupportedCultures = supportedCultures;
                 options.SupportedUICultures = supportedCultures;
-
             });
-
-
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-                
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

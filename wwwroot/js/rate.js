@@ -1,4 +1,5 @@
-﻿function starmark(item) {
+﻿
+function starmark(item) {
     count = item.id[0];
     sessionStorage.starRating = count;
     var subid = item.id.substring(1);
@@ -9,7 +10,6 @@
         else {
             $("#" + (i + 1) + subid).css("color", "black");
         }
-
     }
 }
 
@@ -23,15 +23,8 @@ function showrating() {
         contentType: false
     }).done(function (response) {
         if (response.status === "success") {
-            $("#myRating").html("My rate: " + response.name);
+         
             $("#avverageUserRate").html(response.avverageRate);
         }
-
-        //var countStar = response.name;
-        //sessionStorage.starRating = countStar;
-        //var subid = item.id.substring(1);
-        //for (var i = 0; i < 5; i++) {
-        //    $("#" + (i + 1) + subid).off("onmouseover");
-        //}
     });
 }

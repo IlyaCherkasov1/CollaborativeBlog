@@ -1,26 +1,40 @@
-﻿<a class="nav-link fa fa-user-circle-o"
-   asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Context.Request.Path">Auth page</a>
-
+﻿
 
 @if (User.Identity.IsAuthenticated)
 {
-    <a class="nav-link" asp-controller="Post" asp-action="Index">@Localizer["MyPublication"]</a>
+<h1>Добро пожаловать @ViewBag.Name</h1>
+<p>Количество лайков: @ViewBag.LikesCount</p>
 
-    <form id="darkThemePost" method="post" enctype="multipart/form-data"
-          asp-controller="Users" asp-action="ThemeSwitch" asp-route-userName="@User.Identity.Name">
+<a class="nav-link" asp-controller="Post" asp-action="Index">@Localizer["MyPublication"]</a>
 
-        <div class="position-fixed py-2 px-3 bg-dark text-white rounded-pill" style="bottom:1rem;left:1rem;">
-            <div class="form-check form-switch pull-right">
-                <input class="form-check-input" type="checkbox" id="darkMode">
-                <label id="darkModeLabel" for="darkMode"></label>
-            </div>
+<form id="darkThemePost" method="post" enctype="multipart/form-data"
+      asp-controller="Users" asp-action="ThemeSwitch" asp-route-userName="@User.Identity.Name">
+
+    <div class="position-fixed py-2 px-3 bg-dark text-white rounded-pill" style="bottom:1rem;left:1rem;">
+        <div class="form-check form-switch pull-right">
+            <input class="form-check-input" type="checkbox" id="darkMode">
+            <label id="darkModeLabel" for="darkMode"></label>
         </div>
-    </form>
+    </div>
+</form>
 
-    <a>@await Html.PartialAsync("_SelectLanguagePartial")</a>
+<a>@await Html.PartialAsync("_SelectLanguagePartial")</a>
 
-    <script src="~/js/dark-mode-switch.min.js"></script>
+@if (User.IsInRole("Admin"))
+{
+    <a class="nav-link" asp-controller="Users" asp-action="Index">@Localizer["Users"]</a>
+    <a class="nav-link" asp-controller="Roles" asp-action="Index">@Localizer["Roles"]</a>
+    <a class="nav-link" asp-controller="Post" asp-action="AllPosts">Все публикации</a>
+}
 
+<button class="btn btn-outline-danger mt-2" onclick="location.href='@Url.Action("LogOff", "Account")'">Log off</button>
+
+<script src="~/js/dark-mode-switch.min.js"></script>
+}
+else
+{
+<a class="nav-link fa fa-user-circle-o"
+   asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Context.Request.Path">Auth page</a>
 }
 
 

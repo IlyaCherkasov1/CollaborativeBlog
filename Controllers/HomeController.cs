@@ -33,8 +33,15 @@ namespace CollaborativeBlog.Controllers
             _userManager = userManager;
         }
 
-        public IActionResult SignIn()
+        public async Task<IActionResult> SignIn()
         {
+            if (User.Identity.IsAuthenticated)
+            {
+                string userId = _userManager.GetUserId(User);
+                User user = await db.Users.FindAsync(userId);
+                ViewBag.Name = user.GivenName;
+                ViewBag.LikesCount = await db.Likes.CountAsync(u => u.UserId == userId);
+            }
             return View();
         }
 
@@ -43,53 +50,65 @@ namespace CollaborativeBlog.Controllers
         {
             var model = new PostViewModel
             {
-                Posts = await db.Posts.OrderBy(p => p.PublicationDate).Include(i => i.Images).Include(t => t.Tags)
-                .Include(c => c.Category).ToListAsync()
+                Posts = await db.Posts.OrderBy(p => p.PublicationDate).Include(i => i.Images)
+                .Include(c => c.Category).AsNoTracking().ToListAsync()
             };
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Index(PostViewModel model)
+        public async Task<IActionResult> Search(PostViewModel model)
         {
             if (!string.IsNullOrEmpty(model.Text))
             {
-                model.Posts = await db.Posts.OrderBy(p => p.PublicationDate).FullTextSearchQuery(model.Text)
-                    .Include(i => i.Images).Include(t => t.Tags).Include(c => c.Category).Include(c => c.Comments).
-                    ToListAsync();
+                model.Posts = await db.Posts.OrderBy(p => p.PublicationDate)
+                    .Include(i => i.Images).Include(c => c.Category).Include(c => c.Comments)
+                    .FullTextSearchQuery(model.Text).Union(db.Comments.FullTextSearchQuery(model.Text)
+                    .Include(p => p.Post).ThenInclude(i => i.Images)
+                    .Include(p => p.Post).ThenInclude(p => p.Comments)
+                    .Include(p => p.Post).ThenInclude(p => p.Category)
+                    .Select(p => p.Post))
+                    .AsNoTracking()
+                    .ToListAsync();
             }
             else
             {
                 model.Posts = await db.Posts.OrderBy(p => p.PublicationDate).
-                    Include(i => i.Images).Include(t => t.Tags).Include(c => c.Category).ToListAsync();
+                    Include(i => i.Images).Include(c => c.Category).AsNoTracking().ToListAsync();
             }
-            return View("Galery",model.Posts);
+            return View (model.Posts);
         }
+
+        public async Task<IActionResult> CategoryPosts(string categoryName)
+        {
+            IEnumerable<Post> posts = await db.Posts.Include(i => i.Images)
+               .Include(c => c.Category).Where(p => p.Category.CategoryName == categoryName)
+               .AsNoTracking().ToListAsync();
+            return View(posts);
+        }
+
 
         public async Task<IActionResult> LastPublication()
         {
-            var posts = await db.Posts.OrderBy(p => p.PublicationDate).Include(i => i.Images).Include(t => t.Tags)
-                .Include(c => c.Category).ToListAsync();
+            var posts = await db.Posts.OrderBy(p => p.PublicationDate).Include(i => i.Images)
+                .Include(c => c.Category).AsNoTracking().ToListAsync();
             return View(posts);
         }
 
         public async Task<IActionResult> HighlyRaitedPosts()
         {
-            var posts = await db.Posts.OrderByDescending(u => u.UserRating).Include(i => i.Images).Include(t => t.Tags)
-                .Include(c => c.Category).ToListAsync();
+            var posts = await db.Posts.OrderByDescending(u => u.UserRating).Include(i => i.Images)
+                .Include(c => c.Category).AsNoTracking().ToListAsync();
             return View(posts);
         }
 
-
-        public async Task<IActionResult> Galery(string tag) 
+        public async Task<IActionResult> TagPosts(string tag) 
         {
             IEnumerable<Post> posts = await db.Posts.Include(i => i.Images).Include(t => t.Tags)
-                .Include(c => c.Category).Where(p => p.Tags.Any(t => t.TagName == tag)).ToListAsync();
+                .Include(c => c.Category).Where(p => p.Tags.Any(t => t.TagName == tag)).AsNoTracking().ToListAsync();
 
             return View(posts);
         }
-
-
  
     }
 }

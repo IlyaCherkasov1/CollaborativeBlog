@@ -8,7 +8,13 @@
         contentType: false
     }).done(function (response) {
         if (response.status === "success") {
-            $("#like").html("likes: " + response.postLikes);
+            $("#like").html("" + response.postLikes);
+            if (response.isLike) {
+                $("#likeIcon").css('color', '#f7296a');
+            }
+            else {
+                $("#likeIcon").css('color','');
+            }
         }
     }); 
 }

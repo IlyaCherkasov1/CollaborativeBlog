@@ -1,8 +1,6 @@
-﻿<h1>Galery:</h1>
-
+﻿@model IEnumerable<Post>
 
 <div class="container">
-
     <div class="row">
         @foreach (var post in Model)
         {
@@ -11,13 +9,11 @@
                 <h5 class=" text-truncate">
                     <a asp-controller="Post" asp-action="PostDetails" asp-route-postId="@post.PostId">
                         @post.Title
-               
                     </a>
                 </h5>
-                <p> @post.Category.CategoryName</p>
-                <p> Raiting: @post.UserRating</p>
+                <p>Категория: @post.Category.CategoryName</p>
+                <p>Рейтинг: @post.UserRating</p>
             </div>
         }
-
     </div>
 </div>

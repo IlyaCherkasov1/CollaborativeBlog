@@ -17,6 +17,7 @@ const btns = document.querySelectorAll('button[id^=but]')
 btns.forEach(btn => {
     btn.addEventListener('click', event => {
         var message = $('textarea#messageZone').val();
+        $('#messageZone').val('');
         hubConnection.invoke("Send", postId, message);
     });
 });

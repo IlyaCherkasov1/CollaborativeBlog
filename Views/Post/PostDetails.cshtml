@@ -7,18 +7,18 @@
                     <header class="mb-4">
                         <h1 class="fw-bolder mb-1">@Model.Title</h1>
 
-                        <p>Оценка автора: @Model.Rating</p>
                         <p>Категория: @Model.Category.CategoryName</p>
-                        
+
+                        <p>Оценка автора: @Model.Rating</p>
+
                         <div class="text-muted fst-italic mb-2">Опубликовано: @Model.PublicationDate.ToLongDateString()</div>
 
-                        @foreach (var item in Model.Tags)
+                        @foreach (var tag in Model.Tags)
                         {
-                            <a class="badge bg-secondary text-decoration-none link-light" href="#!">@item.TagName</a>
+                            <a class="badge bg-secondary text-decoration-none link-light" asp-controller="Home"
+                               asp-action="TagPosts" asp-route-tag="@tag.TagName">@tag.TagName</a>
                         }
-
                     </header>
-
 
                     <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
                         <div class="carousel-indicators">
@@ -30,12 +30,12 @@
                         </div>
                         <div class="carousel-inner">
                             <div class="carousel-item active">
-                                <img class="d-block w-100" src="@Model.Images[0].ImageUri" >
+                                <img class="d-block w-100" src="@Model.Images[0].ImageUri">
                             </div>
                             @for (int i = 1; i < Model.Images.Count; i++)
                             {
                                 <div class="carousel-item ">
-                                    <img class="d-block w-100" src="@Model.Images[i].ImageUri" >
+                                    <img class="d-block w-100" src="@Model.Images[i].ImageUri">
                                 </div>
                             }
                         </div>
@@ -62,91 +62,147 @@
 
                 </article>
 
-                <div id="like">likes: @ViewBag.CountLike</div>
+                <div class="d-flex">
 
-                <form id="myLikePost" method="post" enctype="multipart/form-data" asp-controller="Post" asp-action="Like"
-                      asp-route-postId="@Model.PostId">
+                    <div class="col">
 
-                    <a  onclick="showlike()" class="fa fa-heart-o fa-lg" ></a>
-                </form>
+                        <form id="myLikePost" method="post" enctype="multipart/form-data" asp-controller="Post" asp-action="Like"
+                              asp-route-postId="@Model.PostId">
 
-                <div class="d-inline">Пользовательский рэйтинг:</div>
-                <h1 id="avverageUserRate">@Model.UserRating</h1>
+                            <div id="like" class="d-inline">@ViewBag.CountLike</div>
+                            <a onclick="showlike()">
+                                @if (ViewBag.IsLike)
+                                {
+                                    <i id="likeIcon" class="fas fa-heart d-inline" style="color: #f7296a"></i>
+
+                                }
+                                else
+                                {
+                                    <i id="likeIcon" class="fas fa-heart d-inline"></i>
+                                }
+                            </a>
 
 
-                <span onmouseover="starmark(this)" onclick="starmark(this)" id="1one" style="font-size:20px;cursor:pointer;" class="fa fa-star checked"></span>
-                <span onmouseover="starmark(this)" onclick="starmark(this)" id="2one" style="font-size:20px;cursor:pointer;" class="fa fa-star "></span>
-                <span onmouseover="starmark(this)" onclick="starmark(this)" id="3one" style="font-size:20px;cursor:pointer;" class="fa fa-star "></span>
-                <span onmouseover="starmark(this)" onclick="starmark(this)" id="4one" style="font-size:20px;cursor:pointer;" class="fa fa-star"></span>
-                <span onmouseover="starmark(this)" onclick="starmark(this)" id="5one" style="font-size:20px;cursor:pointer;" class="fa fa-star"></span>
+                        </form>
+                    </div>
+                    <div class="col">
+             
+                    </div>
+
+                    <div class="col">
+                        <p class="d-inline">Пользовательский рэйтинг:</p>
+                        <h5 id="avverageUserRate" class="d-inline Bold"> @Model.UserRating</h5>
+                    </div>
+
+                </div>
+
                 <br />
-                <div class="d-inline"></div>
-                <span id="myRating"></span>
 
                 <form id="myRatePost" method="post" enctype="multipart/form-data"
                       asp-controller="Post" asp-action="Rate" asp-route-postId="@Model.PostId">
-
-                    <button type="button" onclick="showrating()" class="btn btn-lg btn-success">Оценить</button>
+                    @for (int i = 0; i < 5; i++)
+                    {
+                        if (i < ViewBag.MyRaiting)
+                        {
+                            <span onclick="starmark(this)" id="@(i+1)one" style="font-size:20px;cursor:pointer;" class="fa fa-star checked"></span>
+                        }
+                        else
+                        {
+                            <span onclick="starmark(this)" id="@(i+1)one" style="font-size:20px;cursor:pointer;" class="fa fa-star "></span>
+                        }
+                    }
+                  <br />
+                    <button type="button" onclick="showrating()" class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        Оценить
+                    </button>
                 </form>
+
+                <br />
+
+                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Ваша оценка принята!</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                Спасибо, что поделились своим мнением
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
 
                 <input type="hidden" name="PostId" value="@Model.PostId" />
 
                 <section class="mb-5">
-                    <div class="card bg-light">
+                    <div class="card">
                         <div class="card-body">
 
                             <form class="mb-4">
                                 <textarea id="messageZone" class="form-control" rows="3" placeholder="Join the discussion and leave a comment!"></textarea>
 
-                                <button id="butSend" type="button" onclick="" class="btn btn-primary">Отправить</button>
+                                <button id="butSend" type="button" class="btn btn-primary mt-1">Отправить</button>
                             </form>
 
-
                             <div id="chatroom"></div>
-
 
                         </div>
                     </div>
                 </section>
             </div>
 
+                    <div class="col-lg-4 ">
 
-            <script src="~/js/signalr.min.js"></script>
-            <script src="~/js/chat.js"></script>
-
-            <div class="col-lg-4">
-
-                <div class="card mb-4">
-                    <div class="card-header">Публикации по тэгам:</div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <ul class="list-unstyled mb-0">
-
-                                    @for (int i = 0; i < Model.Tags.Count; i++)
-                                    {
-                                        <li><a href="#!">@Model.Tags[i].TagName</a></li>
-                                    }
-
-                                </ul>
-                            </div>
-                            <div class="col-sm-6">
-                                <ul class="list-unstyled mb-0">
-                                    <li><a href="#!">JavaScript</a></li>
-                                    <li><a href="#!">CSS</a></li>
-                                    <li><a href="#!">Tutorials</a></li>
-                                </ul>
+                        <!-- Categories widget-->
+                        <div class="card  mb-4">
+                            <div class="card-header">Categories</div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <ul class="list-unstyled mb-0">
+                                            <li><a href="#!">Web Design</a></li>
+                                            <li><a href="#!">HTML</a></li>
+                                            <li><a href="#!">Freebies</a></li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <ul class="list-unstyled mb-0">
+                                            <li><a href="#!">JavaScript</a></li>
+                                            <li><a href="#!">CSS</a></li>
+                                            <li><a href="#!">Tutorials</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                @*<div class="card mb-4">
-            <div class="card-header">Raiting</div>
-            <div class="card-body">@Model.Rating</div>
-        </div>*@
-            </div>
-        </div>
+                        <h3>С обзором также читают:</h3>
+
+                        <div class="card mb-3" style="max-width: 540px;">
+                            <div class="row g-0">
+                                <div class="col-md-4">
+                                    <img class="img-fluid rounded-start" src="~/9a216a974262e9792f1ee009656b6874.jpg" />
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Card title</h5>
+                                        <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content.</p>
+                                        <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <script src="~/js/signalr.min.js"></script>
+                    <script src="~/js/chat.js"></script>
+
+                </div>
     </div>
 
     <script src="~/js/like.js"></script>

@@ -20,7 +20,7 @@ namespace CollaborativeBlog.Components
 
         public IViewComponentResult Invoke()
         {
-            var tags = db.Tags.Select(t => t.TagName).ToList();
+            var tags = db.Tags.Select(t => t.TagName).AsNoTracking().ToList();
             return View(tags);
         }
     }

@@ -2,11 +2,8 @@
 
 @if (User.Identity.IsAuthenticated)
 {
-    <h1>Welcome!</h1>
-        
-    <br />
+
     <button class="btn btn-outline-danger" onclick="location.href='@Url.Action("LogOff", "Account")'">Log off</button>
-    <br />
 }
 else
 {

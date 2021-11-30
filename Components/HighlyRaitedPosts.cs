@@ -21,7 +21,7 @@ namespace CollaborativeBlog.Components
         public IViewComponentResult Invoke()
         {
             var highlyRaitedPosts =  db.Posts.OrderByDescending(u => u.UserRating).Include(i => i.Images).Include(t => t.Tags)
-                .Include(c => c.Category).ToList();
+                .Include(c => c.Category).AsNoTracking().ToList();
             return View(highlyRaitedPosts);
         }
     }

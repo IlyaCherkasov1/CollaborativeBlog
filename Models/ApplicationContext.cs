@@ -24,6 +24,5 @@ namespace CollaborativeBlog.Models
         public DbSet<Resource> Resources { get; set; }
         public DbSet<Comment> Comments { get; set; }
 
-
     }
 }

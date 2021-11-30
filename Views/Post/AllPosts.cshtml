@@ -14,11 +14,7 @@
                 <td>Test</td>
                 <td>
                     <form method="post">
-                        <a class="btn btn-sm btn btn-info" asp-action="PostDetails" asp-route-postId="@post.PostId">Открыть</a>
-                        <a class="btn btn-sm btn-primary" asp-action="EditPost" asp-route-id="@post.PostId">Изменить</a>
-                        <button type="submit" class="btn btn-sm btn-danger" asp-action="DeletePost" asp-route-postId="@post.PostId">
-                            Удалить
-                        </button>
+                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
                     </form>
                 </td>
             </tr>
@@ -26,7 +22,7 @@
     </tbody>
 </table>
 
-<a asp-action="AddPost">Добавить публикацию</a>
+<a class="btn btn-sm btn btn-primary">Создать связь</a>
 
 
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>

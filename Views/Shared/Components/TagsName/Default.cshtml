@@ -3,8 +3,7 @@
     @foreach (var tag in Model)
     {
         <li style="display:inline-block">
-            <a  asp-action="Galery" asp-route-tag="@tag">#@tag </a>
+            <a  asp-action="TagPosts" asp-route-tag="@tag">#@tag </a>
         </li>
-
     }
 </ul>

@@ -30,7 +30,13 @@ namespace CollaborativeBlog.Controllers
             _userManager = userManager;
         }
 
-        [Authorize(Roles = "User, Admin")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AllPosts()
+        {
+            List<Post> posts = await db.Posts.ToListAsync();
+            return View(posts);
+        }
+   
         public async Task<IActionResult> Index()
         {
             string id = _userManager.GetUserId(User);
@@ -177,14 +183,28 @@ namespace CollaborativeBlog.Controllers
 
         public async Task<IActionResult> PostDetails(int postId)
         {
+            string userId = _userManager.GetUserId(User);
+            User user = await _userManager.FindByNameAsync(User.Identity.Name);
+
             Post post =  await db.Posts.Where(p => p.PostId == postId).Include(i => i.Images)
                 .Include(t => t.Tags).Include(c=>c.Category).FirstAsync();
-
 
             int countLike = await db.Posts.Where(p => p.PostId == postId).Include(l => l.Likes).
              Select(p => p.Likes.Count()).FirstAsync();
 
             ViewBag.CountLike = countLike;
+            ViewBag.IsLike =  await db.Likes.AnyAsync(p => p.PostId == postId && p.UserId == userId);
+
+            if (await db.Ratings.AnyAsync(p => p.PostId == postId && p.UserId == userId))
+            {
+               ViewBag.MyRaiting = await db.Ratings.Where(p => p.PostId == postId && p.UserId == userId)
+               .Select(r => r.RatingNumber).FirstOrDefaultAsync();
+            }
+            else
+            {
+                ViewBag.MyRaiting = 0;
+            }
+       
             return View(post);
         }
 
@@ -221,7 +241,7 @@ namespace CollaborativeBlog.Controllers
 
             await db.SaveChangesAsync();
 
-            return Json(new { Status = "success", Name = ratingNumber, AvverageRate = rate });
+            return Json(new { Status = "success", AvverageRate = rate });
         }
 
         [HttpPost]
@@ -253,7 +273,9 @@ namespace CollaborativeBlog.Controllers
             int countLike = await db.Posts.Where(p => p.PostId == postId).Include(l => l.Likes).
              Select(p => p.Likes.Count()).FirstAsync();
 
-            return Json(new { Status = "success", PostLikes = countLike });
+            bool isLike = await db.Likes.AnyAsync(p => p.PostId == postId && p.UserId == userId);
+
+            return Json(new { Status = "success", PostLikes = countLike , IsLike = isLike});
         }
     }
 }

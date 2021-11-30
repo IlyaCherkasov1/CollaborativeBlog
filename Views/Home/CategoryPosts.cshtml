@@ -1,0 +1,20 @@
+﻿<h1>PostCategory:</h1>
+
+
+<div class="container">
+    <div class="row">
+        @foreach (var post in Model)
+        {
+            <div class="col-lg-3 col-md-4 col-6">
+                <img src="@post.Images[0].ImageUri" class="card-img-top " />
+                <h5 class=" text-truncate">
+                    <a asp-controller="Post" asp-action="PostDetails" asp-route-postId="@post.PostId">
+                        @post.Title
+                    </a>
+                </h5>
+                <p>Категория: @post.Category.CategoryName</p>
+                <p>Рейтинг: @post.UserRating</p>
+            </div>
+        }
+    </div>
+</div>

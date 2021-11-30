@@ -1,57 +1,56 @@
 ﻿<link href="~/css/owl.carousel.min.css" rel="stylesheet" />
 <link href="~/css/owl.theme.default.min.css" rel="stylesheet" />
 
+
 @model PostViewModel
 
-    <div class="container">
 
-        <h4><a asp-action="LastPublication">Последнии публикации:</a></h4>
-        <p>Обновляется после каждой добавленной записи</p>
-        <div class="owl-one owl-carousel owl-theme">
-            @foreach (var post in Model.Posts)
-            {
 
-                <div class="ms-2 me-2">
-                    <div class="card">
-                        <img src="@post.Images[0].ImageUri" class="card-img-top " />
-                        <div class="card-body">
-                            <h5 class="card-title text-truncate">
-                                <a asp-controller="Post" asp-action="PostDetails" asp-route-postId="@post.PostId">
-                                    @post.Title
-                                    <eq-highlight-text text="@Model.Text" value="@post.Title"></eq-highlight-text>
-                                </a>
-                            </h5>
-                            @post.Category.CategoryName
-                            <p> Рейтинг: @post.UserRating</p>
-                        </div>
+
+<div class="container">
+    <h4><a asp-action="LastPublication">Последнии публикации:</a></h4>
+    <p>Обновляется после каждой добавленной записи</p>
+    <div class="owl-carousel owl-theme">
+        @foreach (var post in Model.Posts)
+        {
+            <div class="ms-2 me-2">
+                <div class="card">
+                    <img src="@post.Images[0].ImageUri" class="card-img-top" />
+                    <div class="card-body">
+                        <h5 class="card-title text-truncate">
+                            <a asp-controller="Post" asp-action="PostDetails" asp-route-postId="@post.PostId">
+                                @post.Title
+                                <eq-highlight-text text="@Model.Text" value="@post.Title"></eq-highlight-text>
+                            </a>
+                        </h5>
+                        Категория: @post.Category.CategoryName
+                        <p> Рейтинг: @post.UserRating</p>
                     </div>
                 </div>
-            }
-        </div>
+            </div>
+        }
     </div>
 
 
     <br />
 
-    <div class="container">
-        <h4>
-            <a asp-action="HighlyRaitedPosts">Публикации с самым высоким рэйтингом:</a>
-        </h4>
-        <p>Обновляется после каждой добавленной записи</p>
+    <h4>
+        <a asp-action="HighlyRaitedPosts">Публикации с самым высоким рэйтингом:</a>
+    </h4>
+    <p>Обновляется после каждой добавленной записи</p>
 
-        <div class="owl-two owl-carousel owl-theme">
-            @await Component.InvokeAsync("HighlyRaitedPosts");
-        </div>
+    <div class="owl-carousel owl-theme">
+        @await Component.InvokeAsync("HighlyRaitedPosts")
     </div>
 
     <br />
 
-    <div class="container">
-        <div >
-            @await Component.InvokeAsync("TagsName");
-        </div>
-    </div>
 
-    <script src="~/js/carousel.js"></script>
-    <script src="~/js/owl.carousel.min.js"></script>
+    <div>
+        @await Component.InvokeAsync("TagsName")
+    </div>
+</div>
+
+<script src="~/js/carousel.js"></script>
+<script src="~/js/owl.carousel.min.js"></script>
 

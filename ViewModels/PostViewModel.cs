@@ -10,6 +10,7 @@ namespace CollaborativeBlog.ViewModels
     public class PostViewModel
     {
         public IEnumerable<Post> Posts { get; set; }
+        public IEnumerable<Comment> Comments { get; set; }
         public string Text { get; set; }
     }
 }

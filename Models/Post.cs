@@ -19,6 +19,7 @@ namespace CollaborativeBlog.Models
         public Category Category { get; set; }
         public string UserId { get; set; }
         public User User { get; set; }
+
         public List<Tag> Tags { get; set; }
         public List<Like> Likes { get; set; }
         public List<Rating> Ratings { get; set; }
