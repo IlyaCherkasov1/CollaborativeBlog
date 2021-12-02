@@ -86,7 +86,8 @@ namespace CollaborativeBlog
             services.AddSingleton(x => new BlobServiceClient(blobConnection));
             services.AddSingleton<IBlobService, BlobService>();
 
-            services.AddControllersWithViews(options => { options.SuppressAsyncSuffixInActionNames = false; })
+            services.AddControllersWithViews(options => { options.SuppressAsyncSuffixInActionNames = false;})
+               
                 .AddDataAnnotationsLocalization(options =>
                 {
                     options.DataAnnotationLocalizerProvider = (type, factory) =>

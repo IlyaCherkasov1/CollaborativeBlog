@@ -1,28 +1,43 @@
 ﻿@model IEnumerable<Post>
-
 <link href="~/css/datatables.css" rel="stylesheet" />
 
-<table id="myTable" class="table">
-    <thead>
-        <tr><th>Post Name</th><th>Test column</th><th></th></tr>
-    </thead>
-    <tbody>
-        @foreach (var post in Model)
-        {
-            <tr>
-                <td>@post.Title</td>
-                <td>Test</td>
-                <td>
-                    <form method="post">
-                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                    </form>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<form id="CreateLinkform" asp-action="CreateLink" asp-controller="Post"
+      method="post" enctype="multipart/form-data">
+    <table id="myTable" class="table">
+        <thead>
+            <tr><th>Post Name</th><th>Test column</th><th></th></tr>
+        </thead>
+        <tbody>
+            @foreach (var post in Model)
+            {
+                <tr>
+                    <td>@post.Title</td>
+                    <td>Test</td>
+                    <td>
+                        <input name="postsId" class="form-check-input" type="checkbox" value="@post.PostId">
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <button type="submit" class="btn btn-sm btn btn-primary" 
+            data-bs-toggle="modal" data-bs-target="#exampleModal">Создать связь</button>
+</form>
 
-<a class="btn btn-sm btn btn-primary">Создать связь</a>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Связь создана успешно</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                   публикации соединены
+            </div>
+        </div>
+    </div>
+</div>
 
 
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>

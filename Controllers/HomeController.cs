@@ -76,7 +76,7 @@ namespace CollaborativeBlog.Controllers
                 model.Posts = await db.Posts.OrderBy(p => p.PublicationDate).
                     Include(i => i.Images).Include(c => c.Category).AsNoTracking().ToListAsync();
             }
-            return View (model.Posts);
+            return View(model.Posts);
         }
 
         public async Task<IActionResult> CategoryPosts(string categoryName)

@@ -23,6 +23,7 @@ namespace CollaborativeBlog.Models
         public DbSet<Culture> Cultures { get; set; }
         public DbSet<Resource> Resources { get; set; }
         public DbSet<Comment> Comments { get; set; }
+        public DbSet<Link> Links { get; set; }
 
     }
 }

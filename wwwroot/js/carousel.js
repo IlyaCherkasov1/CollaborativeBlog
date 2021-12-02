@@ -3,7 +3,7 @@
         autoplay: false,
         autoplayhoverpause: true,
         autoplaytimeout: 50,
-        items: 7,
+        items: 5,
         nav: true,
         loop: true,
         margin: 5,
@@ -23,11 +23,11 @@
                 dots: false
             },
             960: {
-                items: 7,
+                items: 5,
                 dots: false
             },
             1200: {
-                items: 7,
+                items: 5,
                 dots: false
             },
         }

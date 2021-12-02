@@ -71,8 +71,8 @@ namespace CollaborativeBlog.Controllers
                 CategoryId = postView.CategoryId,
                 UserId = _userManager.GetUserId(User),
                 User = await _userManager.FindByNameAsync(User.Identity.Name),
-                Category = db.Categories.Where(x => x.CategoryId == postView.CategoryId).First(),
-                Tags = db.Tags.Where(t => postView.TagsId.Contains(t.TagId)).ToList()
+                Category = await db.Categories.Where(x => x.CategoryId == postView.CategoryId).FirstOrDefaultAsync(),
+                Tags = await db.Tags.Where(t => postView.TagsId.Contains(t.TagId)).ToListAsync()
             };
             await db.Posts.AddAsync(post);
             await db.SaveChangesAsync();
@@ -173,8 +173,8 @@ namespace CollaborativeBlog.Controllers
             post.PublicationDate = DateTime.Now;
             post.Rating = postView.Rating;
             post.CategoryId = postView.CategoryId;
-            post.Category = db.Categories.Where(x => x.CategoryId == postView.CategoryId).First();
-            post.Tags = db.Tags.Where(t => postView.TagsId.Contains(t.TagId)).ToList();
+            post.Category = await db.Categories.Where(x => x.CategoryId == postView.CategoryId).FirstOrDefaultAsync();
+            post.Tags = await db.Tags.Where(t => postView.TagsId.Contains(t.TagId)).ToListAsync();
 
             await db.SaveChangesAsync();
 
@@ -276,6 +276,19 @@ namespace CollaborativeBlog.Controllers
             bool isLike = await db.Likes.AnyAsync(p => p.PostId == postId && p.UserId == userId);
 
             return Json(new { Status = "success", PostLikes = countLike , IsLike = isLike});
+        }
+
+        [HttpPost]
+        public async Task<RedirectToActionResult> CreateLink(int[] postsId)
+        {
+            if (postsId.Length != 0)
+            {
+                List<Post> posts = await db.Posts.Where(p => postsId.Contains(p.PostId)).ToListAsync();
+                Link link = new Link { Posts = posts };
+                await db.Links.AddAsync(link);
+                await db.SaveChangesAsync();
+            }
+            return RedirectToAction("AllPosts");
         }
     }
 }
