@@ -12,7 +12,7 @@
  */
 
 const ACTIVE_CLASS = "is-active";
-const ACTIVE_CLASSES = ["is-active", "bg-primary", "text-white"];
+const ACTIVE_CLASSES = ["is-active", "bg-primary", "text-dark"];
 const VALUE_ATTRIBUTE = "data-value";
 
 class Tags {

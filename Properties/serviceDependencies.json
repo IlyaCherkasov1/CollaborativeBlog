@@ -4,8 +4,13 @@
       "type": "mssql",
       "connectionId": "ConnectionStrings:DefaultConnection"
     },
+    "storage1": {
+      "type": "storage",
+      "connectionId": "BlobConnection"
+    },
     "secrets1": {
-      "type": "secrets"
+      "type": "secrets",
+      "connectionId": "VaultUri"
     },
     "signalr1": {
       "type": "signalr",

@@ -1,3 +1,7 @@
-﻿<h1>Galery:</h1>
+﻿<div class="container">
+    <div class="row">
+        <h1>@Localizer["SearchResult"]</h1>
+        @{await Html.RenderPartialAsync("_Galery");}
+    </div>
+</div>
 
-@{ await Html.RenderPartialAsync("_Galery");}

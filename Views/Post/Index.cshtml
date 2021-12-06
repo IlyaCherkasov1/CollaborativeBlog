@@ -1,40 +1,31 @@
 ﻿@model IEnumerable<Post>
 
-<link href="~/css/datatables.css" rel="stylesheet" />
-
 <table id="myTable" class="table">
     <thead>
-        <tr><th>Post Name</th><th>Test column</th><th></th></tr>
+        <tr><th>@Localizer["PostName"]</th><th>@Localizer["PostDate"]</th><th></th></tr>
     </thead>
     <tbody>
         @foreach (var post in Model)
         {
-            <tr>
-                <td>@post.Title</td>
-                <td>Test</td>
-                <td>
-                    <form method="post">
-                        <a class="btn btn-sm btn btn-info" asp-action="PostDetails" asp-route-postId="@post.PostId">Открыть</a>
-                        <a class="btn btn-sm btn-primary" asp-action="EditPost" asp-route-id="@post.PostId">Изменить</a>
-                        <button type="submit" class="btn btn-sm btn-danger" asp-action="DeletePost" asp-route-postId="@post.PostId">
-                            Удалить
-                        </button>
-                    </form>
-                </td>
-            </tr>
+        <tr>
+            <td>@post.Title</td>
+            <td>@post.PublicationDate.ToShortDateString()</td>
+            <td>
+                <form method="post">
+                    <a class="btn btn-sm btn btn-info custom" asp-action="PostDetails" asp-route-postId="@post.PostId">@Localizer["Open"]</a>
+                    <a class="btn btn-sm btn-primary custom" asp-action="EditPost" asp-route-id="@post.PostId">@Localizer["Change"]</a>
+                    <button type="submit" class="btn btn-sm btn-danger custom" asp-action="DeletePost" asp-route-postId="@post.PostId"
+                            asp-route-returnUrl="@Context.Request.Path">
+                        @Localizer["Delete"]
+                    </button>
+                </form>
+            </td>
+        </tr>
         }
     </tbody>
 </table>
 
-<a asp-action="AddPost">Добавить публикацию</a>
+<a class="btn btn-sm btn btn-primary mt-2" asp-action="AddPost" asp-route-userName="@User.Identity.Name">@Localizer["AddPost"]</a>
 
-
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
-
-<script>
-    $(document).ready(function () {
-        $('#myTable').DataTable();
-    });
-</script>
 
 

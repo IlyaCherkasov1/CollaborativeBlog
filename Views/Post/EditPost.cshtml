@@ -1,64 +1,79 @@
 ﻿<script src="~/ckeditor/ckeditor.js"></script>
 <script type="module" src="~/js/bootstrap-tags.js"></script>
 
+@model CreatePostViewModels
+
 <div>
+    <h3>@Localizer["EditingPost"]</h3>
 
-    <h3>Редактирование публикации</h3>
-    <p>Для добавление публикации заполните следующие поля:</p>
+    <form asp-antiforgery="true" asp-action="EditPost" asp-controller="Post" method="post" enctype="multipart/form-data">
+        <div>
 
-    <form asp-action="EditPost" asp-controller="Post" method="post" enctype="multipart/form-data">
-        <input type="hidden" name="PostId" value="@Model.Post.PostId" />
-
-        <div class="form-group col-md-15">
-            <input class="form-control" type="text" name="Title" value="@Model.Post.Title" placeholder="Заголовок" />
-        </div>
-
-        <div class="form-group  col-md-15">
-            <textarea class="form-control" rows="3" type="text" name="ShortDescription"
-                      placeholder="Короткое описание">@Model.Post.ShortDescription</textarea>
-        </div>
-
-        <div class="form-group col-md-15">
-            <textarea id="Description" name="Description" rows="10" cols="80">@Model.Post.Description</textarea>
-        </div>
-
-        <div class="form-group  col-md-15">
-            <input class="form-control" type="number" name="rating" min="0" max="10" value="@Model.Post.Rating" placeholder="Rating" />
-        </div>
-
-        <div class="form-group col-md-15">
-            <div>
-             
-
-                @Html.DropDownList("CategoryId", (IEnumerable<SelectListItem>)ViewBag.CategoryId)
-
-                <div class="select-arrow"></div>
+            <div class="validation" asp-validation-summary="All"></div>
+            <div class="mb-4">
+                <input type="hidden" asp-for="PostId" value="@Model.PostId" />
             </div>
-        </div>
 
-        <div class="form-group col-md-15">
-            <div>
-        
-                @Html.DropDownList("TagsId", (IEnumerable<SelectListItem>)ViewBag.TagsId, htmlAttributes: 
-               new { @class = "form-select", multiple = "multiple" })
-
-                <div class="invalid-feedback">Please select a valid tag.</div>
+            <div class="mb-4">
+                <label asp-for="Title"></label><br />
+                <input asp-for="Title" class="form-control" type="text" value="@Model.Title" placeholder="Заголовок" />
+                <span asp-validation-for="Title" class="text-danger"></span>
             </div>
-        </div>
 
-        <div class="dropzone-previews"></div>
+            <div class="mb-4">
+                <label asp-for="ShortDescription"></label><br />
+                <textarea asp-for="ShortDescription" class="form-control" rows="3" type="text"
+                          placeholder="Короткое описание">@Model.ShortDescription</textarea>
+                <span asp-validation-for="ShortDescription" class="text-danger"></span>
 
-        <div class="panel-body">
-            <button type="submit" id="submit" class="btn btn-primary btn-lg btn-block"
-                    back>
-                Next
-            </button>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Description"></label><br />
+                <textarea asp-for="Description" id="Description" rows="10" cols="80">@Model.Description</textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Rating"></label><br />
+                <input asp-for="Rating" class="form-control" type="number" min="0" max="10" value="@Model.Rating" placeholder="Rating" />
+                <span asp-validation-for="Rating" class="text-danger"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="CategoryId"></label><br />
+                <div>
+                    <select asp-for="CategoryId" asp-items="(IEnumerable<SelectListItem>)ViewBag.CategoryId" class="form-select" aria-label="Default select example">
+                        <option>@Localizer["SelectCategory"]</option>
+                    </select>
+
+                    <div class="select-arrow"></div>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="TagsId"></label><br />
+                <div>
+                    <select asp-for="TagsId" asp-items="(IEnumerable<SelectListItem>)ViewBag.TagsId" class="form-select" multiple>
+                        <option selected disabled hidden value=""></option>
+                    </select>
+
+                    <div class="invalid-feedback">@Localizer["TagError"]</div>
+                </div>
+            </div>
+
+            <div class="dropzone-previews"></div>
+
+            <div class="panel-body">
+                <button type="submit" id="submit" class="btn btn-primary btn-lg btn-block"
+                        back>
+                    @Localizer["Next"]
+                </button>
+            </div>
         </div>
     </form>
 
 </div>
-
-
 
 <script>
     CKEDITOR.replace('Description');

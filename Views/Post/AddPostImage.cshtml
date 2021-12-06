@@ -12,10 +12,14 @@
     <input type="hidden" name="postId" value="@Model" />
 </form>
 
-<button type="submit" id="submit" form="uploader" class="btn btn-primary btn-lg btn-block"
-        back>
-    Upload
+<button type="submit" id="submit" form="uploader" class="btn btn-primary btn-lg btn-block" back>
+    @Localizer["Upload"]
 </button>
+<br />
+<a class="btn btn-secondary mt-5" asp-controller="Post" asp-action="Index">@Localizer["MyPublication"]</a>
+
+
+
 
 
 

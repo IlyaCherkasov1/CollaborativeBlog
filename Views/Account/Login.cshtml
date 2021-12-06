@@ -3,17 +3,16 @@
 @if (User.Identity.IsAuthenticated)
 {
 
-    <button class="btn btn-outline-danger" onclick="location.href='@Url.Action("LogOff", "Account")'">Log off</button>
+<button class="btn btn-outline-danger" onclick="location.href='@Url.Action("LogOff", "Account")'">@Localizer["LogOff"]</button>
 }
 else
 {
-    <h1> Auntification: </h1>
-    <form asp-controller="Account" asp-action="ExternalLogin"  asp-route-returnUrl="@Model.ReturnUrl">
-        @foreach (var provider in Model.ExternalProviders)
+<form asp-controller="Account" asp-action="ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl">
+    @foreach (var provider in Model.ExternalProviders)
         {
-            <button type="submit" name="provider" class="btn btn-outline-info" value="@provider.Name">
-                @provider.DisplayName
-            </button>
+    <button type="submit" name="provider" class="btn btn-outline-info" value="@provider.Name">
+        @provider.DisplayName
+    </button>
         }
-    </form>
+</form>
 }

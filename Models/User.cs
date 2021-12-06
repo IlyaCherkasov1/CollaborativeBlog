@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿ using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,14 +16,14 @@ namespace CollaborativeBlog.Models
             Posts = new List<Post>();
         }
 
-        public string GivenName { get; set; }
+        public string GivenName { get; set; } 
         public string Language { get; set; } = "ru";
 
         public bool IsDarkTheme { get; set; } = false;
 
         public List<Post> Posts { get; set; }
 
-        public List<Like> Likes { get; set; }
+        public IList<Like> Likes { get; set; }
         public List<Rating> Ratings { get; set; }
         public List<Comment> Comments { get; set; }
     }

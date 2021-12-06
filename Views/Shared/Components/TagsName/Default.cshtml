@@ -1,9 +1,9 @@
-﻿<ul>
-    Tags
-    @foreach (var tag in Model)
-    {
-        <li style="display:inline-block">
-            <a  asp-action="TagPosts" asp-route-tag="@tag">#@tag </a>
-        </li>
-    }
-</ul>
+﻿@model IEnumerable<string>
+
+@foreach (var tag in Model)
+{
+<a class="btn btn-outline-primary" asp-action="TagPosts" asp-route-tag="@tag">#@Localizer[tag] </a>
+}
+
+
+

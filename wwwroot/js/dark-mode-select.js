@@ -2,5 +2,5 @@
     $("#lightDarkScheme").attr("media", localStorage.media);
 }
 else {
-    $("#lightDarkScheme").attr("media", "(prefers-color-scheme: dark)");
+    $("#lightDarkScheme").attr("media", "(prefers-color-scheme: light)");
 }

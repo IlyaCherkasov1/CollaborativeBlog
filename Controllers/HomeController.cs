@@ -20,11 +20,9 @@ namespace CollaborativeBlog.Controllers
 {
     public class HomeController : Controller
     {
-
         private readonly ApplicationContext db;
         private readonly IStringLocalizer _localizer;
         private readonly UserManager<User> _userManager;
-
 
         public HomeController(ApplicationContext db, IStringLocalizer localizer, UserManager<User> userManager)
         {
@@ -50,9 +48,10 @@ namespace CollaborativeBlog.Controllers
         {
             var model = new PostViewModel
             {
-                Posts = await db.Posts.OrderBy(p => p.PublicationDate).Include(i => i.Images)
+                Posts = await db.Posts.OrderByDescending(p => p.PublicationDate).Include(i => i.Images)
                 .Include(c => c.Category).AsNoTracking().ToListAsync()
             };
+          
             return View(model);
         }
 
@@ -84,20 +83,21 @@ namespace CollaborativeBlog.Controllers
             IEnumerable<Post> posts = await db.Posts.Include(i => i.Images)
                .Include(c => c.Category).Where(p => p.Category.CategoryName == categoryName)
                .AsNoTracking().ToListAsync();
+
             return View(posts);
         }
 
 
         public async Task<IActionResult> LastPublication()
         {
-            var posts = await db.Posts.OrderBy(p => p.PublicationDate).Include(i => i.Images)
+            var posts = await db.Posts.OrderByDescending(p => p.PublicationDate).Include(i => i.Images)
                 .Include(c => c.Category).AsNoTracking().ToListAsync();
             return View(posts);
         }
 
         public async Task<IActionResult> HighlyRaitedPosts()
         {
-            var posts = await db.Posts.OrderByDescending(u => u.UserRating).Include(i => i.Images)
+            var posts = await db.Posts.OrderByDescending(p => p.UserRating).Include(i => i.Images)
                 .Include(c => c.Category).AsNoTracking().ToListAsync();
             return View(posts);
         }

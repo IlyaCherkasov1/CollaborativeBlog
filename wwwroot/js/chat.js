@@ -8,7 +8,13 @@ hubConnection.on("Send", sendFunc);
 hubConnection.on("LoadMessage", function (comments) {
    
     for (let i = 0, l = comments.length; i < l; i++) {
-        sendFunc(comments[i].text, comments[i].userName, comments[i].date);
+        if (comments[i].userName == null) {
+            var userName = "User not found";
+        }
+        else {
+            userName = comments[i].userName;
+        }
+        sendFunc(comments[i].text, userName, comments[i].date);
     }
 });
 

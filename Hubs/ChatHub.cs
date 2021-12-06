@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CollaborativeBlog.Hubs
-{   
+{
     public class ChatHub : Hub
     {
         private readonly ApplicationContext db;
@@ -28,7 +28,6 @@ namespace CollaborativeBlog.Hubs
         public async Task Send(int postId, string message)
         {
             Post post = await db.Posts.Where(p => p.PostId == postId).FirstAsync();
-            string userId = Context.UserIdentifier;
             User user = await _userManager.FindByNameAsync(Context.User.Identity.Name);
 
             Comment comment = new Comment
@@ -37,7 +36,6 @@ namespace CollaborativeBlog.Hubs
                 Date = DateTime.Now,
                 PostId = postId,
                 Post = post,
-                UserId = userId,
                 User = user
             };
 
@@ -49,9 +47,9 @@ namespace CollaborativeBlog.Hubs
 
         public async Task LoadMessage(int postId)
         {
-            
+
             Post post = await db.Posts.FindAsync(postId);
-            var comments = await db.Comments.Where(p => p.Post == post )
+            var comments = await db.Comments.Where(p => p.Post == post)
              .Select(x => new CommentsViewModel()
              {
                  Text = x.Text,

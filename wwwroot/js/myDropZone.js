@@ -6,9 +6,9 @@ Dropzone.options.uploader = {
     paramName: myParamName,
     autoProcessQueue: false,
     uploadMultiple: true,
-    parallelUploads: 3,
+    parallelUploads: 100,
     maxFiles: 100,
-    maxFilesize: 5,
+    maxFilesize: 10,
     acceptedFiles: 'image/*',
     addRemoveLinks: true,
 
@@ -21,20 +21,9 @@ Dropzone.options.uploader = {
 
         });
 
-        //this.on("sendingmultiple", function () {
+        this.on("success", function (file, response) {
+            window.location = "/Home/Index";
+        });
 
-        //    for (instance in CKEDITOR.instances) {
-        //        CKEDITOR.instances[instance].updateElement();
-        //    }
-        //});
-
-        //this.on("success", function (file, response) {
-
-        //    window.location = response.urllink;
-        //});
-
-        //dzClosure.on('complete', function () {
-        //    window.location.href = base_url + 'admin/saveProject';
-        //})
     }
 }

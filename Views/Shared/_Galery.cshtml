@@ -1,19 +1,32 @@
 ﻿@model IEnumerable<Post>
 
-<div class="container">
-    <div class="row">
         @foreach (var post in Model)
         {
-            <div class="col-lg-3 col-md-4 col-6">
-                <img src="@post.Images[0].ImageUri" class="card-img-top " />
-                <h5 class=" text-truncate">
-                    <a asp-controller="Post" asp-action="PostDetails" asp-route-postId="@post.PostId">
+
+        <div class="col-lg-3 col-md-4 col-6 ">
+            <div class="card">
+                @if (post.Images.Count != 0)
+                {
+                    <img src="@post.Images[0].ImageUri" class="card-img-top" />
+                }
+                else
+                {
+                    <img class="card-img-top" src="~/default.png" />
+                }
+            <div class="card-body">
+
+                <h5 class="card-title text-truncate">
+                    <a asp-controller="Post" asp-action="PostDetails" asp-route-postId="@post.PostId" class="stretched-link">
                         @post.Title
                     </a>
                 </h5>
-                <p>Категория: @post.Category.CategoryName</p>
-                <p>Рейтинг: @post.UserRating</p>
+                <label asp-for="@post.Category.CategoryName"></label>
+                <p class="d-inline">: @Localizer[post.Category.CategoryName]</p>
+                <br />
+                <label asp-for="@post.UserRating"></label>
+                <p class="d-inline">: @post.UserRating</p>
+
             </div>
-        }
-    </div>
-</div>
+            </div>
+        </div>
+            }

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +23,9 @@ using System.Security.Claims;
 using System.Security.Principal;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Azure;
+using Azure.Storage.Queues;
+using Azure.Core.Extensions;
 
 namespace CollaborativeBlog
 {
@@ -64,7 +68,6 @@ namespace CollaborativeBlog
             services.ConfigureApplicationCookie(config =>
             {
                 config.LoginPath = "/Account/Login";
-              //  config.AccessDeniedPath = "/Home/Index";
             });
 
             services.AddAuthorization(options =>
@@ -86,14 +89,17 @@ namespace CollaborativeBlog
             services.AddSingleton(x => new BlobServiceClient(blobConnection));
             services.AddSingleton<IBlobService, BlobService>();
 
-            services.AddControllersWithViews(options => { options.SuppressAsyncSuffixInActionNames = false;})
+            services.AddControllersWithViews(options => {
+                options.SuppressAsyncSuffixInActionNames = false;
+                options.ModelBindingMessageProvider.SetValueMustNotBeNullAccessor(_ => "The field is required.");
+            })
                
                 .AddDataAnnotationsLocalization(options =>
                 {
                     options.DataAnnotationLocalizerProvider = (type, factory) =>
                     factory.Create(null);
                 }).AddViewLocalization();
-                 
+
             services.Configure<RequestLocalizationOptions>(options =>
             {
                 var supportedCultures = new[]
@@ -107,6 +113,7 @@ namespace CollaborativeBlog
                 options.SupportedCultures = supportedCultures;
                 options.SupportedUICultures = supportedCultures;
             });
+  
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -140,4 +147,6 @@ namespace CollaborativeBlog
             });
         }
     }
+   
+    
 }

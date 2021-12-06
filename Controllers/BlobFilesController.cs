@@ -41,10 +41,7 @@ namespace CollaborativeBlog.Controllers
 
             var res = await _blobService.UploadBlob(fileName, file, "images");
 
-          //  if (res)
-               return Redirect("~/Home/Index");
-
-          //  return View();
+           return Redirect("~/Home/Index");
         }
 
         [HttpGet]

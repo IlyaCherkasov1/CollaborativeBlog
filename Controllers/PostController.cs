@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -44,63 +45,62 @@ namespace CollaborativeBlog.Controllers
             return View(posts);
         }
 
-        [Authorize(Roles = "Admin")]
-        public IActionResult AddPost()
+        public IActionResult AddPost(string userName)
         {
             ViewBag.CategoryId = new SelectList(db.Categories, "CategoryId", "CategoryName");
             ViewBag.TagsId = new SelectList(db.Tags, "TagId", "TagName");
-            var addpostviewmodel = new AddPostViewModel
-            {
-                Categories = db.Categories,
-                Tags = db.Tags
-            };
-            return View(addpostviewmodel);
+            ViewBag.UserName = userName;
+            return View();
         }
 
-         [Authorize(Roles ="Admin")]
         [HttpPost]
-        public async Task<IActionResult> AddPost(PostCreateViewModels postView)
+        public async Task<IActionResult> AddPost(CreatePostViewModels postView)
         {
-            Post post = new Post
+            if (ModelState.IsValid)
             {
-                Title = postView.Title,
-                ShortDescription = postView.ShortDescription,
-                Description = postView.Description,
-                PublicationDate = DateTime.Now,
-                Rating = postView.Rating,
-                CategoryId = postView.CategoryId,
-                UserId = _userManager.GetUserId(User),
-                User = await _userManager.FindByNameAsync(User.Identity.Name),
-                Category = await db.Categories.Where(x => x.CategoryId == postView.CategoryId).FirstOrDefaultAsync(),
-                Tags = await db.Tags.Where(t => postView.TagsId.Contains(t.TagId)).ToListAsync()
-            };
-            await db.Posts.AddAsync(post);
-            await db.SaveChangesAsync();
+                Post post = new Post
+                {
+                    Title = postView.Title,
+                    ShortDescription = postView.ShortDescription,
+                    Description = postView.Description,
+                    PublicationDate = DateTime.Now,
+                    Rating = postView.Rating,
+                    User = await _userManager.FindByNameAsync(postView.userName),
+                    Category = await db.Categories.Where(x => x.CategoryId == postView.CategoryId).FirstOrDefaultAsync(),
+                    Tags = await db.Tags.Where(t => postView.TagsId.Contains(t.TagId)).ToListAsync()
+                };
+                await db.Posts.AddAsync(post);
+                await db.SaveChangesAsync();
 
-            return RedirectToAction("AddPostImage",new {id = post.PostId});
+                return RedirectToAction("AddPostImage", new { id = post.PostId });
+            }
+            else
+            {
+                return RedirectToAction("AddPost", new { userName = postView.userName }); 
+            }
         }
 
-       [Authorize(Roles ="Admin")]
         public IActionResult AddPostImage(int id)
         {
             return View(id);
         }
 
-
-        [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<IActionResult> AddPostImage(IEnumerable<IFormFile> images, int postId)
+        public async Task<JsonResult> AddPostImage(IEnumerable<IFormFile> images, int postId)
         {
-            if (images == null)
-            {
-                return Redirect("/Home/Index");
-            }
-
-            Post post = await db.Posts.Where(p => p.PostId == postId).FirstAsync();
+            Post post = await db.Posts.Include(i => i.Images).Where(p => p.PostId == postId).FirstAsync();
 
             List<Image> imgs = new List<Image>();
             List<string> fileNames = new List<string>();
             List<Uri> imageBlobs = new List<Uri>();
+
+            if (post.Images != null)
+            {
+                foreach (var image in post.Images)
+                {
+                    await _blobService.DeleteBlob(image.ImageUri.Segments[2], "images");
+                }
+            }
 
             foreach (var image in images)
             {
@@ -108,20 +108,22 @@ namespace CollaborativeBlog.Controllers
 
                 fileNames.Add(fileName);
                 var uploadRes = await _blobService.UploadBlob(fileName, image, "images");
+                
                 var getRes = await _blobService.GetBlob(fileName, "images");
                 Uri uri = new Uri(getRes);
                 imageBlobs.Add(uri);
                 imgs.Add(new Image { ImageUri = uri, Post = post });
             }
+
             post.Images = imgs;          
          
             await db.SaveChangesAsync();
 
-            return Redirect("/Home/Index");
+            return Json(new { Status = "success" });
         }
 
-        [Authorize(Roles ="Admin")]
-        public async Task<IActionResult> DeletePost(int postId)
+       
+        public async Task<IActionResult> DeletePost(int postId, string returnUrl)
         {
             Post post = await db.Posts.Include(i => i.Images).Where(p => p.PostId == postId).FirstAsync();
             db.Posts.Remove(post);
@@ -129,63 +131,72 @@ namespace CollaborativeBlog.Controllers
 
             foreach (var image in post.Images)
             {
-              await _blobService.DeleteBlob(image.ImageUri.AbsoluteUri, "images");
+                await _blobService.DeleteBlob(image.ImageUri.Segments[2], "images");
             }
 
-            return RedirectToAction("Index");
+            return Redirect(returnUrl);
         }
 
-        [Authorize(Roles ="Admin")]
+
         public async Task<IActionResult> EditPost(int id)
         {
             Post post = await db.Posts.Include(t => t.Tags).Include(c => c.Category).Where(p => p.PostId == id).FirstAsync();
-            ViewBag.CategoryId = new SelectList(await db.Categories.ToListAsync(), "CategoryId","CategoryName", post.CategoryId);
+           
+            CreatePostViewModels createPostViewModels = new CreatePostViewModels
+            {
+                PostId = post.PostId,
+                Title = post.Title,
+                ShortDescription = post.ShortDescription,
+                Description = post.Description,
+                Rating = post.Rating,
+                CategoryId = post.CategoryId,
+                TagsId = post.Tags.Select(t => t.TagId).ToList()
+            };
 
-            List<int> selectedTagId = post.Tags.Select(t => t.TagId).ToList();
-            IEnumerable<SelectListItem> tagItems = db.Tags.Select(t => new SelectListItem
+            ViewBag.CategoryId = new SelectList(await db.Categories.ToListAsync(), "CategoryId","CategoryName", createPostViewModels.CategoryId);
+
+            IEnumerable<SelectListItem> tagItems =  db.Tags.Select(t => new SelectListItem
             {
                   Value = t.TagId.ToString(),
                   Text = t.TagName,
-                  Selected = selectedTagId.Contains(t.TagId)
+                  Selected = createPostViewModels.TagsId.Contains(t.TagId)
             });
             ViewBag.TagsId = tagItems;
 
-            var editPostModel = new EditPostViewModel
-            {
-                Post = post,
-                Categories = db.Categories,
-                Tags = db.Tags
-            };
-            return View(editPostModel);
+            return View(createPostViewModels);
         }
 
 
-        [Authorize(Roles ="Admin")]
         [HttpPost]
-        public async Task<IActionResult> EditPost(PostCreateViewModels postView)
+        public async Task<IActionResult> EditPost(CreatePostViewModels postView)
         {
-            Post post = await db.Posts.Include(t => t.Tags).Include(c => c.Category)
-                .Where(p => p.PostId == postView.PostId).FirstAsync();
+            if (ModelState.IsValid)
+            {
+                Post post = await db.Posts.Include(t => t.Tags).Include(c => c.Category)
+             .Where(p => p.PostId == postView.PostId).FirstAsync();
 
-            post.Title = postView.Title;
-            post.ShortDescription = postView.ShortDescription;
-            post.Description = postView.Description;
-            post.PublicationDate = DateTime.Now;
-            post.Rating = postView.Rating;
-            post.CategoryId = postView.CategoryId;
-            post.Category = await db.Categories.Where(x => x.CategoryId == postView.CategoryId).FirstOrDefaultAsync();
-            post.Tags = await db.Tags.Where(t => postView.TagsId.Contains(t.TagId)).ToListAsync();
+                post.Title = postView.Title;
+                post.ShortDescription = postView.ShortDescription;
+                post.Description = postView.Description;
+                post.Rating = postView.Rating;
+                post.Category = await db.Categories.Where(x => x.CategoryId == postView.CategoryId).FirstOrDefaultAsync();
+                post.Tags = await db.Tags.Where(t => postView.TagsId.Contains(t.TagId)).ToListAsync();
 
-            await db.SaveChangesAsync();
+                await db.SaveChangesAsync();
 
-            return RedirectToAction("AddPostImage", new { id = post.PostId });
+                return RedirectToAction("AddPostImage", new { id = post.PostId });
+            }
+            else
+            {
+                return RedirectToAction("EditPost", new { id = postView.PostId });
+            }
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> PostDetails(int postId)
         {
             string userId = _userManager.GetUserId(User);
-            User user = await _userManager.FindByNameAsync(User.Identity.Name);
-
+       
             Post post =  await db.Posts.Where(p => p.PostId == postId).Include(i => i.Images)
                 .Include(t => t.Tags).Include(c=>c.Category).FirstAsync();
 
@@ -229,7 +240,6 @@ namespace CollaborativeBlog.Controllers
                     RatingNumber = ratingNumber,
                     PostId = postId,
                     Post = post,
-                    UserId = userId,
                     User = user
                 };
                  await db.Ratings.AddAsync(rating);
@@ -240,7 +250,6 @@ namespace CollaborativeBlog.Controllers
             post.UserRating = rate;
 
             await db.SaveChangesAsync();
-
             return Json(new { Status = "success", AvverageRate = rate });
         }
 
@@ -262,7 +271,6 @@ namespace CollaborativeBlog.Controllers
                 {
                     PostId = postId,
                     Post = post,
-                    UserId = userId,
                     User = user
                 };
 

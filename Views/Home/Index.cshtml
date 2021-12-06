@@ -4,46 +4,55 @@
 @model PostViewModel
 
 <div class="container">
-    <h4><a asp-action="LastPublication">Последнии публикации:</a></h4>
-    <p>Обновляется после каждой добавленной записи</p>
+    <div class="m-lg-3">
+        <h4><a asp-action="LastPublication">@Localizer["LastPublication"]</a></h4>
+        <p>@Localizer["RefreshAfter"]</p>
+    </div>
     <div class="owl-carousel owl-theme">
         @foreach (var post in Model.Posts)
         {
-            <div class="ms-2 me-2">
-                <div class="card">
-                    <img src="@post.Images[0].ImageUri" class="card-img-top" />
-                    <div class="card-body">
-                        <h5 class="card-title text-truncate">
-                            <a asp-controller="Post" asp-action="PostDetails" asp-route-postId="@post.PostId">
-                                @post.Title
-                                <eq-highlight-text text="@Model.Text" value="@post.Title"></eq-highlight-text>
-                            </a>
-                        </h5>
-                        Категория: @post.Category.CategoryName
-                        <p> Рейтинг: @post.UserRating</p>
-                    </div>
+        <div class="ms-2 me-2">
+            <div class="card">
+                @if (post.Images.Count != 0)
+                    {
+                <img src="@post.Images[0].ImageUri" class="card-img-top" />
+                    }
+                    else
+                    {
+                <img class="card-img-top" src="~/default.png" />
+                    }
+                <div class="card-body">
+                    <h5 class="card-title text-truncate ">
+                        <a asp-controller="Post" asp-action="PostDetails" asp-route-postId="@post.PostId" class="stretched-link">
+                            @post.Title
+                        </a>
+                    </h5>
+                    <label asp-for="@post.Category.CategoryName"></label>
+                    <p class="d-inline">: @Localizer[post.Category.CategoryName]</p>
+                    <br />
+                    <label asp-for="@post.UserRating"></label>
+                    <p class="d-inline">: @post.UserRating</p>
                 </div>
             </div>
+        </div>
         }
     </div>
 
 
-    <br />
-
-    <h4>
-        <a asp-action="HighlyRaitedPosts">Публикации с самым высоким рэйтингом:</a>
-    </h4>
-    <p>Обновляется после каждой добавленной записи</p>
+    <div class="m-lg-3 mt-lg-5">
+        <h4> <a asp-action="HighlyRaitedPosts">@Localizer["HighlyRaited"]</a></h4>
+        <p>@Localizer["RefreshAfter"]</p>
+    </div>
 
     <div class="owl-carousel owl-theme">
         @await Component.InvokeAsync("HighlyRaitedPosts")
     </div>
 
-    <br />
 
-
-    <div>
-        @await Component.InvokeAsync("TagsName")
+    <div class="mt-lg-5">
+        <nav class="blog-pagination" aria-label="Pagination">
+            @await Component.InvokeAsync("TagsName")
+        </nav>
     </div>
 </div>
 
